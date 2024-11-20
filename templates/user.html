@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+</head>
+<body>
+    <h2>Your Profile</h2>
+
+    <!-- Flash message section -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if user %}
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+            </tr>
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+                <td>{{ user[2] }}</td>
+            </tr>
+        </table>
+    {% else %}
+        <p>No user data found.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
+</html>
