@@ -98,6 +98,29 @@ def deleteuser():
 
     return render_template('deleteuser.html')
 
+@app.route('/edituser', methods=['GET','POST'])
+@superadmin_required
+def edituser():
+    if request.method == 'POST':
+        user_id = request.form['userid']
+        role_id = request.form['roleid']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("UPDATE Users SET role_id = %s  WHERE id = %s",(role_id, user_id))
+            conn.commit()
+            #redirect somewhere else
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash(f"Registration error: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('edituser.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
