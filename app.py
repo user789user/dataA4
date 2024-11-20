@@ -36,7 +36,7 @@ def register():
         conn = get_db_connection()
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO users (username, password_hash, role_id, department_id) VALUES (%s, %s, %d, %d)",
+            cursor.execute("INSERT INTO Users (username, password_hash, role_id, department_id) VALUES (%s, %s, %s, %s)",
                            (username, hashed_password, role_id, department_id))
             conn.commit()
             flash('Registration successful! Please log in.')
