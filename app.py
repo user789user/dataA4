@@ -30,12 +30,14 @@ def register():
         username = request.form['username']
         password = request.form['password']
         hashed_password = generate_password_hash(password)
+        role_id = request.form['roleid']
+        department_id = request.form['departmentid']
 
         conn = get_db_connection()
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)",
-                           (username, hashed_password))
+            cursor.execute("INSERT INTO users (username, password_hash, role_id, department_id) VALUES (%s, %s, %d, %d)",
+                           (username, hashed_password, role_id, department_id))
             conn.commit()
             flash('Registration successful! Please log in.')
             return redirect(url_for('login'))
