@@ -1,16 +1,3 @@
-CREATE TABLE Roles (
-         id SERIAL PRIMARY KEY,
-         role_name VARCHAR(50) UNIQUE NOT NULL
-);
-
-CREATE TABLE Users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    role_id INT REFERENCES Roles(id),
-    department_id INT REFERENCES Department(dnumber)  -- Nullable for
-);
-
 --drop table if exists department, dependent, dept_location, employee, project, works_on;
 
 CREATE TABLE Employee(
@@ -387,7 +374,20 @@ INSERT INTO Works_On VALUES
 ('460836586', 118, 26),
 ('550561234', 118, 32);
 
+CREATE TABLE Roles (
+         id SERIAL PRIMARY KEY,
+         role_name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role_id INT REFERENCES Roles(id),
+    department_id INT REFERENCES Department(dnumber)  -- Nullable for
+);
+
 INSERT INTO Roles VALUES
-('Super Admin'),
-('Department Admin'),
-('Normal User');
+(1, 'Super Admin'),
+(2, 'Department Admin'),
+(3, 'Normal User');
