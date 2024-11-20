@@ -76,6 +76,28 @@ def register():
 
     return render_template('register.html')
 
+@app.route('/deleteuser', methods=['GET','POST'])
+@superadmin_required
+def deleteuser():
+    if request.method == 'POST':
+        username = request.form['username']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE FROM Users WHERE username = %s",(username,))
+            conn.commit()
+            #redirect somewhere else
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash(f"Registration error: {e}")
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('deleteuser.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
