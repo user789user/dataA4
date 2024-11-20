@@ -109,11 +109,5 @@ def index():
     return render_template('index.html', username=username)
 
 
-@app.route('/test_login_required')
-@login_required
-def test_login_middleware():
-    return "If you see this message it means you are logged in!!!!!!!!!!!!!!"
-
-
 if __name__ == "__main__":
     app.run(debug=True)

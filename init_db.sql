@@ -11,7 +11,7 @@ CREATE TABLE Users (
     department_id INT REFERENCES Department(dnumber)  -- Nullable for
 );
 
-drop table if exists department, dependent, dept_location, employee, project, works_on;
+--drop table if exists department, dependent, dept_location, employee, project, works_on;
 
 CREATE TABLE Employee(
       Fname VARCHAR(10) NOT NULL,
