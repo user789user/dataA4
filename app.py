@@ -23,8 +23,34 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def superadmin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("Please log in to access this page.", "error")
+            return redirect(url_for("login"))
+        else:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            user_id = session['user_id']
+            
+            cursor.execute("SELECT role_id FROM Users WHERE ID = %s", (user_id,))
+            user_role = cursor.fetchone()
+
+            if user_role[0] != 1:
+                flash("Only superadmins can see this.", "error")
+                return redirect(url_for("login"))
+
+            cursor.close()
+            conn.close()
+                
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 @app.route('/register', methods=['GET', 'POST'])
+@superadmin_required
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -97,6 +123,7 @@ def show_user():
     cursor.execute(
         "SELECT id, username, role_id FROM users WHERE id = %s", (user_id,))
     user = cursor.fetchone()  # Retrieve the row for the current user
+    print(user[0])
     cursor.close()
     conn.close()
 
