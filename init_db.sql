@@ -387,4 +387,7 @@ INSERT INTO Works_On VALUES
 ('460836586', 118, 26),
 ('550561234', 118, 32);
 
-
+INSERT INTO Roles VALUES
+('Super Admin'),
+('Department Admin'),
+('Normal User');
