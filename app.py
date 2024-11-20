@@ -34,7 +34,7 @@ def register():
         conn = get_db_connection()
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)",
+            cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)",
                            (username, hashed_password))
             conn.commit()
             flash('Registration successful! Please log in.')
@@ -58,7 +58,7 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, password FROM users WHERE username = %s", (username,))
+            "SELECT id, password_hash FROM users WHERE username = %s", (username,))
         user = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -93,7 +93,7 @@ def show_user():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT id, username, role FROM users WHERE id = %s", (user_id,))
+        "SELECT id, username, role_id FROM users WHERE id = %s", (user_id,))
     user = cursor.fetchone()  # Retrieve the row for the current user
     cursor.close()
     conn.close()

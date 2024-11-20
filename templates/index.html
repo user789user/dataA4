@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+</head>
+<body>
+    {% if username %}
+        <h2>Welcome, {{ username }}!</h2>
+        <p>You are logged in.</p>
+        <!-- Logout Button -->
+        <form action="{{ url_for('logout') }}" method="GET">
+            <button type="submit">Logout</button>
+        </form>
+        <p>See user row in Database? <a href="{{ url_for('show_user') }}">user page</a>.</p>
+    {% else %}
+        <h2>Welcome, Guest!</h2>
+        <p>Please <a href="{{ url_for('login') }}">log in</a> to access more features.</p>
+    {% endif %}
+
+    <!-- Flash message section -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</body>
+</html>
