@@ -414,9 +414,15 @@ VALUES ('Super Admin'),
        ('Normal User');
 
 INSERT INTO Users (username, password_hash, role_id, department_id)
-VALUES ('superadmin', 'superademinkey', 1, Null),
-       ('admin', 'ademinkey', 2, 5), --research department
-       ('user', 'usekey', 3, 7); --finance department
+VALUES ('superadmin',
+        'scrypt:32768:8:1$JdcsqVAjK1HU7yWr$22d34d4755912bf1c39eddfa5ba9f4020870db34ab5a8b9f2c401a8d55327017442a90e00c4950c637dcb805f391a958946109ee3ed70c33a196fca9108a3382',
+        1, Null),
+       ('admin',
+        'scrypt:32768:8:1$3dfnWVEeOnNDshcP$b962721c9853c26e259faba21d52f9a9026bc310b1b32ab545e441001f853fcb281bcf500102f6d1a6f4b3e547cd307c22fdd11cacf21529d512a6a6fcb12a07',
+        2, 5), --research department
+       ('user',
+        'scrypt:32768:8:1$bqmatfe3stLtF4CC$44c4fc8ff3e28332dddc1440ac284bf91c940d720a3e3a2a50d7169bfbe8b9347aab8bad0787900672cb515e7eb13bb538e1688e394c7a44d8bbf8d6b0d3323c',
+        3, 7); --finance department
 
 
 

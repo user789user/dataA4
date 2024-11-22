@@ -80,7 +80,7 @@
         ```
       - Run the `init_db.sql` script:
         ```plaintext
-        \i path/to/init_db.sql
+        (eg.\i path/to/init_db.sql)
         ```
 
    3). **Configure the Project**  
@@ -105,15 +105,13 @@
       http://127.0.0.1:5000
       ```
    5). **Use exist admin/user to login to test the any above task**  
-    --for superadmin:  
-        username:superadmin  
-        password:superademinkey  
-    --for admin(research department):  
-        username:admin  
-        password:ademinkey  
-    --for user(finance department):  
-        username:user  
-        password:usekey          
+    The following accounts are pre-created for testing purposes:  
+
+    | Role        | Username      | Password           |
+    |-------------|---------------|--------------------|
+    | superadmin  | superadmin    | superkey     |
+    | admin       | admin         | adminkey           |
+    | user        | user          | userkey            |       
         
 5. **Notes**  
    1). The `init_db.sql` script ensures that the required database and tables are created before running the application.
