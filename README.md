@@ -104,7 +104,17 @@
       ```plaintext
       http://127.0.0.1:5000
       ```
-
+   5). **Use exist admin/user to login to test the any above task**  
+    --for superadmin:  
+        username:superadmin  
+        password:superademinkey  
+    --for admin(research department):  
+        username:admin  
+        password:ademinkey  
+    --for user(finance department):  
+        username:user  
+        password:usekey          
+        
 5. **Notes**  
    1). The `init_db.sql` script ensures that the required database and tables are created before running the application.
    2). Make sure the PostgreSQL username and password in `config.py` match the credentials on your system.
@@ -114,3 +124,4 @@
 ## **Developer Information**
 - **Group name**: Project 5  
 - **Team members**: Daniela, Charles, Yin
+
