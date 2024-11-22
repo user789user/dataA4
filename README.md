@@ -31,7 +31,7 @@
 ---
 
 # Project Name: A4 Database Management System  
-1. **Overview**
+1. **Overview**  
    This project is a Flask-based web application that interacts with a PostgreSQL
    database to manage and display data related to employees, departments, and
    projects. It is designed with role-based access control (RBAC) to ensure that
