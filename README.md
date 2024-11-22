@@ -30,8 +30,7 @@
 
 ---
 
-# Project Name: A4 Database Management System
-
+# Project Name: A4 Database Management System  
 1. **Overview**
    This project is a Flask-based web application that interacts with a PostgreSQL
    database to manage and display data related to employees, departments, and
@@ -61,9 +60,9 @@
     └── README.md       # Project documentation
     ```
 
-4. **Setup instructions**
+4. **Setup instructions**  
    1). **Install Dependencies**  
-      Run the following command to install required libraries:
+    Run the following command to install required libraries:
       ```plaintext
       pip install flask psycopg2 werkzeug
       ```
@@ -106,12 +105,12 @@
       http://127.0.0.1:5000
       ```
 
-5. **Notes**
+5. **Notes**  
    1). The `init_db.sql` script ensures that the required database and tables are created before running the application.
    2). Make sure the PostgreSQL username and password in `config.py` match the credentials on your system.
    3). After running the application, you can directly access the system's functionalities via the browser without needing additional setup or testing scripts.
 
 ---
-# **Developer Information**
+## **Developer Information**
 - **Group name**: Project 5  
 - **Team members**: Daniela, Charles, Yin
