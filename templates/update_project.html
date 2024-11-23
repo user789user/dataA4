@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Update Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Update Project</h1>
+    <form method="post">
+        <label for="pname">Project Name:</label>
+        <input type="text" name="pname" value="{{ project[1] }}" required><br>
+
+        <label for="plocation">Location:</label>
+        <input type="text" name="plocation" value="{{ project[2] }}" required><br>
+
+        <label for="dnum">Department Number:</label>
+        <input type="number" name="dnum" value="{{ project[3] }}" required><br>
+
+        <input type="submit" value="Update Project">
+    </form>
+    <a href="{{ url_for('view_projects') }}">Back to Projects</a>
+</body>
+</html>
+

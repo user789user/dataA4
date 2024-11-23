@@ -3,26 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Create User</title>
 </head>
 <body>
-    <h2>Register</h2>
-    <form action="{{ url_for('register') }}" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
+<h1>Create User</h1>
+<form action="{{ url_for('register') }}" method="POST">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
 
-        <label for="roleid">Role number:</label>
-        <input type="number" id="roleid" name="roleid" required><br><br>
-        
-        <label for="departmentid">Department number:</label>
-        <input type="number" id="departmentid" name="departmentid" required><br><br>
-        
-        <button type="submit">Register</button>
-    </form>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
 
-    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+    <label for="roleid">Role ID:</label>
+    <select id="roleid" name="roleid" required>
+        <option value="1">Super Admin</option>
+        <option value="2">Department Admin</option>
+        <option value="3">Normal User</option>
+    </select>
+
+    <label for="departmentid">Department ID:</label>
+    <input type="text" id="departmentid" name="departmentid" placeholder="Optional for Superadmin">
+
+    <button type="submit">Create User</button>
+</form>
+<a href="{{ url_for('base') }}">Back to Dashboard</a>
+<div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
 </body>
 </html>

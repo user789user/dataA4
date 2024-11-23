@@ -4,8 +4,8 @@
 
 ### 1. User and Role Management
 - [x] Superadmin can create a user
-- [x] Superadmin can change a user's department id
-- [ ] Superadmin can delete a user
+- [ ] Superadmin can change a user's department id
+- [x] Superadmin can delete a user
 
 ### 2. Data Access Control
 - [ ] Department admin can view or edit data in their department
@@ -21,12 +21,15 @@
   - [ ] Works_on views
 
 ### 4. Authentication and Authorization
-- [ ] Log in and log out
-- [ ] Session data according to user role and department
+- [x] Log in and log out
+- [x] Session data according to user role and department
 
 ### 5. User Interface with Role-Based Display
-- [ ] Dashboard
-- [ ] Base.html with links based on role
+- [x] Create a dashboard
+    - [x] Super Admins can view all departments
+    - [ ] Super Admins can view all users
+    - [ ] Super Admins have full access.   
+- [x] Base.html with links based on role
 
 ---
 
