@@ -195,8 +195,10 @@ def viewdepartments():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    print(session['department_id'])
+
     # if the user is not a superadmin they can only see their own department info
-    if session['department_id'] != 'Null':
+    if session['department_id'] != None:
         dnum = session['department_id']
         cursor.execute("SELECT Dnumber, Dname, Mgr_ssn FROM Department WHERE Dnumber = %s", (dnum, ))
         departments = cursor.fetchall()
@@ -282,8 +284,6 @@ def view_projects():
     return render_template('projects.html', projects=projects)
 
 # Route to add a new project
-
-
 @app.route('/projects/add', methods=('GET', 'POST'))
 @superadmin_or_admin_required
 def add_project():
@@ -294,7 +294,7 @@ def add_project():
         dnum = request.form['dnum']
 
         # if the user isn't a superadmin - they are restricted to only adding projects to their own department
-        if session['department_id'] != 'Null':
+        if session['department_id'] != None:
             dnum = session['department_id']
 
         conn = get_db_connection()
