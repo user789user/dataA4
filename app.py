@@ -67,6 +67,26 @@ def superadmin_required(f):
 
     return decorated_function
 
+def superadmin_or_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("Please log in to access this page.", "error")
+            return redirect(url_for("login"))
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT role_id FROM Users WHERE id = %s", (session['user_id'],))
+        role = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if role and (role[0] != 1 or role[0] != 2):
+            flash("Access restricted to admins or superadmins.", "error")
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 @app.route('/')
 @login_required
@@ -182,12 +202,12 @@ def viewdepartments():
 
 
 @app.route('/departments/add', methods=('GET', 'POST'))
+@superadmin_required
 def add_department():
     if request.method == 'POST':
         dname = request.form['dname']
         dnumber = request.form['dnumber']
         mgr_ssn = request.form['mgr_ssn']
-
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
@@ -204,6 +224,7 @@ def add_department():
 
 # Route to update a department
 @app.route('/departments/update/<int:dnumber>', methods=('GET', 'POST'))
+@superadmin_required
 def update_department(dnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -230,6 +251,7 @@ def update_department(dnumber):
 
 
 @app.route('/departments/delete/<int:dnumber>', methods=('POST',))
+@superadmin_required
 def delete_department(dnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -255,12 +277,17 @@ def view_projects():
 
 
 @app.route('/projects/add', methods=('GET', 'POST'))
+@superadmin_or_admin_required
 def add_project():
     if request.method == 'POST':
         pname = request.form['pname']
         pnumber = request.form['pnumber']
         plocation = request.form['plocation']
         dnum = request.form['dnum']
+
+        # if the user isn't a superadmin - they are restricted to only adding projects to their own department
+        if session['department_id'] != 'Null':
+            dnum = session['department_id']
 
         conn = get_db_connection()
         cursor = conn.cursor()
