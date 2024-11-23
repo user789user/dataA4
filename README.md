@@ -13,7 +13,7 @@
 
 ### 3. Views and Queries for Department-Specific Data
 - [ ] Views and queries filtered by department for department admins and users:
-  - [ ] Department table views
+  - [X] Department table views
   - [ ] Dependent views
   - [ ] Dept_location views
   - [ ] Employee views

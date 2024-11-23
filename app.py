@@ -194,8 +194,16 @@ def deleteuser():
 def viewdepartments():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT Dnumber, Dname, Mgr_ssn FROM Department")
-    departments = cursor.fetchall()
+
+    # if the user is not a superadmin they can only see their own department info
+    if session['department_id'] != 'Null':
+        dnum = session['department_id']
+        cursor.execute("SELECT Dnumber, Dname, Mgr_ssn FROM Department WHERE Dnumber = %s", (dnum, ))
+        departments = cursor.fetchall()
+    else:
+        cursor.execute("SELECT Dnumber, Dname, Mgr_ssn FROM Department")
+        departments = cursor.fetchall()
+    
     cursor.close()
     conn.close()
     return render_template('viewdepartments.html', departments=departments)
