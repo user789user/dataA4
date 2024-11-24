@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Add Department</title>
+    <style>
+        /* Add your inline styles here */
+    </style>
+</head>
+<body>
+    <h1>Add New Department</h1>
+    <form method="post">
+        <label for="dname">Department Name:</label>
+        <input type="text" name="dname" required><br>
+
+        <label for="dnumber">Department Number:</label>
+        <input type="number" name="dnumber" required><br>
+
+        <label for="mgr_ssn">Manager SSN:</label>
+        <input type="text" name="mgr_ssn" required><br>
+
+        <input type="submit" value="Add Department">
+    </form>
+    <a href="{{ url_for('view_departments') }}">Back to Departments</a>
+</body>
+</html>
+

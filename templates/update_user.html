@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User</title>
+</head>
+<body>
+    <h1>Update User</h1>
+    <form method="post">
+        <p><strong>Username:</strong> {{ user[1] }}</p> <!-- Display username as static text -->
+
+        <label for="role_id">Role:</label>
+        <select id="role_id" name="role_id" required>
+            <option value="1" {% if user[2] == 1 %}selected{% endif %}>Super Admin</option>
+            <option value="2" {% if user[2] == 2 %}selected{% endif %}>Department Admin</option>
+            <option value="3" {% if user[2] == 3 %}selected{% endif %}>Normal User</option>
+        </select><br><br>
+
+        <label for="department_id">Department ID:</label>
+        <input type="text" id="department_id" name="department_id" value="{{ user[3] or '' }}"> <!-- Allow blank for Super Admin -->
+        <br><br>
+
+        <input type="submit" value="Update User">
+    </form>
+    <a href="{{ url_for('view_users') }}">⬅ Back to Users</a>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="alert alert-{{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

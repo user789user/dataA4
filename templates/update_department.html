@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Update Department</title>
+</head>
+<body>
+    <h1>Update Department</h1>
+    <form method="post">
+        <label for="dnumber">Department ID:</label>
+        <input type="text" name="dnumber" value="{{ department[0] }}" required><br>
+
+        <label for="dname">Department Name:</label>
+        <input type="text" name="dname" value="{{ department[1] }}" required><br>
+
+        <label for="mgr_ssn">Manager SSN:</label>
+        <input type="text" name="mgr_ssn" value="{{ department[2] }}" required><br>
+
+        <input type="submit" value="Update Department">
+    </form>
+    <a href="{{ url_for('view_departments') }}">Back to Departments</a>
+</body>
+</html>

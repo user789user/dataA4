@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Update Employee</title>
+</head>
+<body>
+    <h1>Update Employee</h1>
+    <form method="post">
+        <label for="ssn">SSN:</label>
+        <input type="text" name="ssn" value="{{ employee[0] }}" readonly><br> <!-- SSN 是唯一的，设为只读 -->
+
+        <label for="fname">First Name:</label>
+        <input type="text" name="fname" value="{{ employee[1] }}" required><br>
+
+        <label for="minit">Middle Initial:</label>
+        <input type="text" name="minit" value="{{ employee[2] }}" maxlength="1"><br> <!-- 限制为一个字符 -->
+
+        <label for="lname">Last Name:</label>
+        <input type="text" name="lname" value="{{ employee[3] }}" required><br>
+
+        <label for="dnumber">Department Number:</label>
+        <input type="text" name="dnumber" value="{{ employee[4] }}" required><br>
+
+        <input type="submit" value="Update Employee">
+    </form>
+    <a href="{{ url_for('view_employees') }}">Back to Employees</a>
+</body>
+</html>
