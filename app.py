@@ -615,6 +615,9 @@ def delete_project(pnumber):
     return redirect(url_for('view_projects'))
 
 # View works On
+###
+### **** SHOULD WORKSON VIEW BE DEPENDENT ON DEPARTMENT OF EMPLOYEE OR DEPARTMENT OF PROJECT *****
+###
 @app.route('/worksOn')
 def view_worksOn():
     conn = get_db_connection()
