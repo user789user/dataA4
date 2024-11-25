@@ -658,7 +658,8 @@ def add_worksOn():
         return redirect(url_for('view_worksOn'))
     return render_template('add_worksOn.html')
        
-# Update Works On        
+# Update Works On
+# Add check for admin department        
 @app.route('/worksOn/update/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
 @superadmin_or_admin_required
 def update_worksOn(ssn, pnumber):
