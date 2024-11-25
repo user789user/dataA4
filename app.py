@@ -585,7 +585,7 @@ def update_project(pnumber):
                        (pnumber, session['department_id']))
             project = cursor.fetchall()
 
-            #if the project has the same dept, allow the 
+            #if the project has the same dept, allow the user to update it
             if project:
                 cursor.execute("UPDATE Project SET Pname = %s, Plocation = %s, Dnum = %s WHERE Pnumber = %s",
                        (pname, plocation, dnum, pnumber))

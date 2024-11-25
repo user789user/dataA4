@@ -17,7 +17,7 @@
   - [ ] Dependent views
   - [ ] Dept_location views
   - [x] Employee views
-  - [ ] Project views
+  - [X] Project views
   - [ ] Works_on views
 
 ### 4. Authentication and Authorization
