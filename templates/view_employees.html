@@ -68,6 +68,7 @@
     <tr>
         <th>SSN</th>
         <th>First Name</th>
+        <th>Middle Initial</th>
         <th>Last Name</th>
         <th>Address</th>
         <th>Salary</th>
@@ -83,6 +84,7 @@
         <td>{{ employee[3] }}</td>
         <td>{{ employee[4] }}</td>
         <td>{{ employee[5] }}</td>
+        <td>{{ employee[6] }}</td>
         <td class="actions">
             {% if role_id in [1, 2] %}
                 <a href="{{ url_for('update_employee', ssn=employee[0]) }}" class="update">Update</a>

@@ -54,12 +54,13 @@ def superadmin_or_admin_required(f):
 
         conn = get_db_connection()
         cursor = conn.cursor()
+        print(session['user_id'])
         cursor.execute("SELECT role_id FROM Users WHERE id = %s", (session['user_id'],))
         role = cursor.fetchone()
         cursor.close()
         conn.close()
 
-        if role and (role[0] != 1 or role[0] != 2):
+        if role and (role[0] != 1 and role[0] != 2):
             flash("Access restricted to admins or superadmins.", "error")
             return redirect(url_for("index"))
         return f(*args, **kwargs)
@@ -374,11 +375,11 @@ def view_employees():
 
     try:
         if role_id == 1:  # Super Admin
-            cursor.execute("SELECT SSN, Fname, Lname, Address, Salary, Dno FROM Employee")
+            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee")
         elif role_id == 2:  # Department Admin
-            cursor.execute("SELECT SSN, Fname, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
+            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
         elif role_id == 3:  # Normal User
-            cursor.execute("SELECT SSN, Fname, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
+            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
         else:
             flash("Access denied. You do not have permission to view employees.", "view_employee_error")
             return redirect(url_for('base'))
@@ -409,13 +410,13 @@ def add_employee():
 
     if request.method == 'POST':
         fname = request.form['fname']
-        minit = request.form.get('minit')
+        minit = request.form.get['minit']
         lname = request.form['lname']
         ssn = request.form['ssn']
         address = request.form['address']
         sex = request.form['sex']
         salary = request.form['salary']
-        super_ssn = request.form.get('super_ssn')
+        super_ssn = request.form.get['super_ssn']
         dno = request.form['dno']
 
         if role_id == 2 and int(dno) != department_id:
@@ -521,9 +522,9 @@ def view_projects():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    if session['department id'] != None:
-        dnum = session['department id']
-        cursor.execute("SELECT Pnumber, Pname, Plocation, %s FROM Project", (dnum, ))
+    if session['department_id'] != None:
+        dnum = session['department_id']
+        cursor.execute("SELECT Pnumber, Pname, Plocation, Dnum FROM Project WHERE Dnum=%s", (dnum, ))
         projects = cursor.fetchall()
 
     else: 
@@ -532,7 +533,8 @@ def view_projects():
 
     cursor.close()
     conn.close()
-    return render_template('projects.html', projects=projects)
+    return render_template('view_projects.html', projects=projects)
+
 
 # Route to add a new project
 @app.route('/projects/add', methods=('GET', 'POST'))
@@ -540,7 +542,7 @@ def view_projects():
 def add_project():
     if request.method == 'POST':
         pname = request.form['pname']
-        pnumber = request.form['pnumber']
+        pnumber = request.form['pnum']
         plocation = request.form['plocation']
         dnum = request.form['dnum']
 
@@ -564,6 +566,7 @@ def add_project():
 
 # Route to update a project
 @app.route('/projects/update/<int:pnumber>', methods=('GET', 'POST'))
+@superadmin_or_admin_required
 def update_project(pnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -587,19 +590,18 @@ def update_project(pnumber):
     conn.close()
     return render_template('update_project.html', project=project)
 
+
 # Route to delete a project
-
-
 @app.route('/projects/delete/<int:pnumber>', methods=('POST',))
 def delete_project(pnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    if session['department id'] == None:
+    if session['department_id'] == None:
         cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
     else: 
         cursor.execute("SELECT FROM Project, Department WHERE Pnumber = %s AND Dnumber = %s AND Dnum = Dnumber", 
-                       (pnumber, session['department id']))
+                       (pnumber, session['department_id']))
         project = cursor.fetchall()
         if project:
             cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
@@ -611,6 +613,94 @@ def delete_project(pnumber):
     cursor.close()
     conn.close()
     return redirect(url_for('view_projects'))
+
+# View works On
+###
+### **** SHOULD WORKSON VIEW BE DEPENDENT ON DEPARTMENT OF EMPLOYEE OR DEPARTMENT OF PROJECT *****
+###
+@app.route('/worksOn')
+def view_worksOn():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if session['department_id'] != None:
+        dnum = session['department_id']
+        cursor.execute("SELECT Essn, Pno, Hours FROM Works_On, Employee WHERE Essn=SSN And Dno = %s",(dnum,))
+        worksOn = cursor.fetchall()
+    else:
+        cursor.execute("SELECT Essn, Pno, Hours FROM Works_On")
+        worksOn = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('view_worksOn.html', worksOn=worksOn)
+    
+# Add works On    
+@app.route('/worksOn/add', methods=('GET', 'POST'))
+@superadmin_or_admin_required
+def add_worksOn():
+    if request.method == 'POST':
+        Essn = request.form['essn']
+        Pno = request.form['pnum']
+        Hours = request.form['Hours']
+        
+        if session['department_id'] != None:
+            conn=get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT Dno FROM Employee WHERE SSN=%s",(Essn,))
+            Dno = cursor.fetchone()
+            if(Dno[0] != session['department_id']):
+                flash("You can only assign work to employees within your own department.")
+                return redirect(url_for('view_worksOn'))
+            cursor.close()
+            conn.close()
+        conn=get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Works_On (Essn, Pno, Hours) VALUES (%s, %s, %s)", (Essn, Pno, Hours,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_worksOn'))
+    return render_template('add_worksOn.html')
+       
+# Update Works On
+# Add check for admin department        
+@app.route('/worksOn/update/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
+@superadmin_or_admin_required
+def update_worksOn(ssn, pnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor() 
+    if request.method == 'POST':
+        Hours = request.form['Hours']
+        cursor.execute("UPDATE Works_On SET Hours = %s WHERE Pno=%s And Essn=%s", (Hours,pnumber,ssn))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_worksOn'))
+    cursor.execute("SELECT Essn, Pno, Hours FROM Works_On WHERE Essn = %s and Pno = %s",(ssn,pnumber,))
+    worksOn = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return render_template('update_worksOn.html',worksOn=worksOn)               
+
+# Delete Works On
+@app.route('/worksOn/delete/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
+def delete_worksOn(ssn, pnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    if session['department_id'] == None:
+        cursor.execute("DELETE FROM Works_On WHERE Pno=%s And Essn=%s", (pnumber, ssn,))
+    else:
+        cursor.execute("SELECT FROM Works_On, Employee WHERE Pno=%s And Essn=%s And Essn=SSN And Dno=%s",(pnumber,ssn,session['department_id']))
+        worksOn = cursor.fetchall()
+        if worksOn:
+            cursor.execute("DELETE FROM Works_On WHERE Pno=%s And Essn=%s", (pnumber,ssn))
+        else:
+            conn.rollback()
+            flash("Failed to delete works on - incorrect department")
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('view_worksOn'))
 
 
 # keep for backup page

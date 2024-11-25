@@ -112,7 +112,7 @@
 
     | Role        | Username      | Password           |
     |-------------|---------------|--------------------|
-    | superadmin  | superadmin    | superkey     |
+    | superadmin  | superadmin    | superkey           |
     | admin       | admin         | adminkey           |
     | user        | user          | userkey            |       
         
