@@ -576,7 +576,7 @@ def update_project(pnumber):
         plocation = request.form['plocation']
         dnum = request.form['dnum']
 
-        if session['department id'] == None:
+        if session['department_id'] == None:
             cursor.execute("UPDATE Project SET Pname = %s, Plocation = %s, Dnum = %s WHERE Pnumber = %s",
                        (pname, plocation, dnum, pnumber))
             conn.commit()
