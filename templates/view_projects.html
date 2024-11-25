@@ -61,7 +61,7 @@
 
 <!-- Add New Employee Link -->
 {% if role_id in [1, 2] %}
-<a href="/projects/add" style="float: right;">➕ Add New Employee</a>
+<a href="/projects/add" style="float: right;">➕ Add New Project</a>
 {% endif %}
 
 <table>
@@ -72,7 +72,7 @@
         <th>Department Number</th>
     </tr>
 
-    {% for employee in employees %}
+    {% for project in projects %}
     <tr>
         <td>{{ project[0] }}</td>
         <td>{{ project[1] }}</td>
