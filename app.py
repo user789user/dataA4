@@ -566,6 +566,7 @@ def add_project():
 
 # Route to update a project
 @app.route('/projects/update/<int:pnumber>', methods=('GET', 'POST'))
+@superadmin_or_admin_required
 def update_project(pnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -613,7 +614,7 @@ def delete_project(pnumber):
     conn.close()
     return redirect(url_for('view_projects'))
 
-
+# View works On
 @app.route('/worksOn')
 def view_worksOn():
     conn = get_db_connection()
@@ -629,7 +630,7 @@ def view_worksOn():
     conn.close()
     return render_template('view_worksOn.html', worksOn=worksOn)
     
-    
+# Add works On    
 @app.route('/worksOn/add', methods=('GET', 'POST'))
 @superadmin_or_admin_required
 def add_worksOn():
@@ -657,7 +658,7 @@ def add_worksOn():
         return redirect(url_for('view_worksOn'))
     return render_template('add_worksOn.html')
        
-        
+# Update Works On        
 @app.route('/worksOn/update/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
 @superadmin_or_admin_required
 def update_worksOn(ssn, pnumber):
@@ -676,7 +677,7 @@ def update_worksOn(ssn, pnumber):
     conn.close()
     return render_template('update_worksOn.html',worksOn=worksOn)               
 
-
+# Delete Works On
 @app.route('/worksOn/delete/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
 def delete_worksOn(ssn, pnumber):
     conn = get_db_connection()
