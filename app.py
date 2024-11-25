@@ -613,6 +613,7 @@ def delete_project(pnumber):
     conn.close()
     return redirect(url_for('view_projects'))
 
+
 @app.route('/worksOn')
 def view_worksOn():
     conn = get_db_connection()
@@ -628,6 +629,35 @@ def view_worksOn():
     conn.close()
     return render_template('view_worksOn.html', worksOn=worksOn)
     
+    
+@app.route('/worksOn/add', methods=('GET', 'POST'))
+@superadmin_or_admin_required
+def add_worksOn():
+    if request.method == 'POST':
+        Essn = request.form['essn']
+        Pno = request.form['pnum']
+        Hours = request.form['Hours']
+        
+        if session['department_id'] != None:
+            conn=get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT Dno FROM Employee WHERE SSN=%s",(Essn,))
+            Dno = cursor.fetchone()
+            if(Dno[0] != session['department_id']):
+                flash("You can only assign work to employees within your own department.")
+                return redirect(url_for('view_worksOn'))
+            cursor.close()
+            conn.close()
+        conn=get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Works_On (Essn, Pno, Hours) VALUES (%s, %s, %s)", (Essn, Pno, Hours,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_worksOn'))
+    return render_template('add_worksOn.html')
+        
+            
 # keep for backup page
 @app.route('/testing')
 def testing():

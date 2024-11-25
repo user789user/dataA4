@@ -1,7 +1,7 @@
 DATABASE_CONFIG = {
 "dbname": "a4_db",
 "user": "postgres",
-"password": "WatchCheds1",
+"password": "password",
 "host": "localhost",
 "port": "5432"
 }
