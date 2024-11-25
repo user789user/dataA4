@@ -524,7 +524,7 @@ def view_projects():
 
     if session['department_id'] != None:
         dnum = session['department_id']
-        cursor.execute("SELECT Pnumber, Pname, Plocation, %s FROM Project", (dnum, ))
+        cursor.execute("SELECT Pnumber, Pname, Plocation, Dnum FROM Project WHERE Dnum=%s", (dnum, ))
         projects = cursor.fetchall()
 
     else: 
