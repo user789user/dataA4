@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Update Works On</title>
+</head>
+<body>
+    <h1>Update Works On</h1>
+    <form method="post">
+        <label for="Hours">Hours:</label>
+        <input type="text" name="Hours" value="{{ worksOn[2] }}" required><br>
+
+        <input type="submit" value="Update Works On">
+    </form>
+    <a href="{{ url_for('view_worksOn') }}">Back to Works On</a>
+</body>
+</html>

@@ -657,7 +657,22 @@ def add_worksOn():
         return redirect(url_for('view_worksOn'))
     return render_template('add_worksOn.html')
         
-            
+@app.route('/worksOn/update/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
+def update_worksOn(ssn, pnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor() 
+    if request.method == 'POST':
+        Hours = request.form['Hours']
+        cursor.execute("UPDATE Works_On SET Hours = %s WHERE Pno=%s And Essn=%s", (Hours,pnumber,ssn))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_worksOn'))
+    cursor.execute("SELECT Essn, Pno, Hours FROM Works_On WHERE Essn = %s and Pno = %s",(ssn,pnumber,))
+    worksOn = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return render_template('update_worksOn.html',worksOn=worksOn)               
 # keep for backup page
 @app.route('/testing')
 def testing():
