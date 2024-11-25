@@ -375,11 +375,11 @@ def view_employees():
 
     try:
         if role_id == 1:  # Super Admin
-            cursor.execute("SELECT SSN, Fname, Lname, Address, Salary, Dno FROM Employee")
+            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee")
         elif role_id == 2:  # Department Admin
-            cursor.execute("SELECT SSN, Fname, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
+            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
         elif role_id == 3:  # Normal User
-            cursor.execute("SELECT SSN, Fname, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
+            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
         else:
             flash("Access denied. You do not have permission to view employees.", "view_employee_error")
             return redirect(url_for('base'))
@@ -410,13 +410,13 @@ def add_employee():
 
     if request.method == 'POST':
         fname = request.form['fname']
-        minit = request.form.get('minit')
+        minit = request.form.get['minit']
         lname = request.form['lname']
         ssn = request.form['ssn']
         address = request.form['address']
         sex = request.form['sex']
         salary = request.form['salary']
-        super_ssn = request.form.get('super_ssn')
+        super_ssn = request.form.get['super_ssn']
         dno = request.form['dno']
 
         if role_id == 2 and int(dno) != department_id:
