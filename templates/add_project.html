@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Add Project</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        form {
+            margin-top: 20px;
+            max-width: 500px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add New Project</h1>
+    <form method="post">
+        <!-- Project Name -->
+        <label for="pname">Project Name:</label>
+        <input type="text" id="pname" name="pname" required>
+
+        <!-- Project Number -->
+        <label for="pnum">Project Number:</label>
+        <input type="number" id="pnum" name="pnum" required>
+
+        <!-- Location -->
+        <label for="plocation">Project Location:</label>
+        <input type="text" id="plocation" name="plocation" required>
+
+        <!-- Dept number -->
+        <label for="dnum">Department Number:</label>
+        <input type="number" id="dnum" name="dnum" required>
+
+        <!-- Submit Button -->
+        <input type="submit" value="Add Project">
+    </form>
+
+    <!-- Back to Projects Link -->
+    <a href="{{ url_for('view_projects') }}">⬅ Back to Projects</a>
+</body>
+</html>
