@@ -1,7 +1,7 @@
 DATABASE_CONFIG = {
-"dbname": "a4_db",
+"dbname": "app_company_a4",
 "user": "postgres",
-"password": "your_password",
+"password": "password",
 "host": "localhost",
 "port": "5432"
 }
