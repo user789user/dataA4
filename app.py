@@ -596,11 +596,11 @@ def delete_project(pnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    if session['department id'] == None:
+    if session['department_id'] == None:
         cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
     else: 
         cursor.execute("SELECT FROM Project, Department WHERE Pnumber = %s AND Dnumber = %s AND Dnum = Dnumber", 
-                       (pnumber, session['department id']))
+                       (pnumber, session['department_id']))
         project = cursor.fetchall()
         if project:
             cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
