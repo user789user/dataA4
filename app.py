@@ -613,7 +613,21 @@ def delete_project(pnumber):
     conn.close()
     return redirect(url_for('view_projects'))
 
-
+@app.route('/worksOn')
+def view_worksOn():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if session['department_id'] != None:
+        dnum = session['department_id']
+        cursor.execute("SELECT Essn, Pno, Hours FROM Works_On, Employee WHERE Essn=SSN And Dno = %s",(dnum,))
+        worksOn = cursor.fetchall()
+    else:
+        cursor.execute("SELECT Essn, Pno, Hours FROM Works_On")
+        worksOn = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('view_worksOn.html', worksOn=worksOn)
+    
 # keep for backup page
 @app.route('/testing')
 def testing():
