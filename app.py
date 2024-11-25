@@ -521,8 +521,8 @@ def view_projects():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    if session['department id'] != None:
-        dnum = session['department id']
+    if session['department_id'] != None:
+        dnum = session['department_id']
         cursor.execute("SELECT Pnumber, Pname, Plocation, %s FROM Project", (dnum, ))
         projects = cursor.fetchall()
 
@@ -532,7 +532,7 @@ def view_projects():
 
     cursor.close()
     conn.close()
-    return render_template('projects.html', projects=projects)
+    return render_template('view_projects.html', projects=projects)
 
 # Route to add a new project
 @app.route('/projects/add', methods=('GET', 'POST'))
