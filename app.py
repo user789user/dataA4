@@ -54,12 +54,13 @@ def superadmin_or_admin_required(f):
 
         conn = get_db_connection()
         cursor = conn.cursor()
+        print(session['user_id'])
         cursor.execute("SELECT role_id FROM Users WHERE id = %s", (session['user_id'],))
         role = cursor.fetchone()
         cursor.close()
         conn.close()
 
-        if role and (role[0] != 1 or role[0] != 2):
+        if role and (role[0] != 1 and role[0] != 2):
             flash("Access restricted to admins or superadmins.", "error")
             return redirect(url_for("index"))
         return f(*args, **kwargs)
@@ -534,6 +535,7 @@ def view_projects():
     conn.close()
     return render_template('view_projects.html', projects=projects)
 
+
 # Route to add a new project
 @app.route('/projects/add', methods=('GET', 'POST'))
 @superadmin_or_admin_required
@@ -587,9 +589,8 @@ def update_project(pnumber):
     conn.close()
     return render_template('update_project.html', project=project)
 
+
 # Route to delete a project
-
-
 @app.route('/projects/delete/<int:pnumber>', methods=('POST',))
 def delete_project(pnumber):
     conn = get_db_connection()
