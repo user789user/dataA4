@@ -45,6 +45,26 @@ def admin_required(f):
 
     return decorated_function
 
+def superadmin_or_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("Please log in to access this page.", "error")
+            return redirect(url_for("login"))
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT role_id FROM Users WHERE id = %s", (session['user_id'],))
+        role = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if role and (role[0] != 1 or role[0] != 2):
+            flash("Access restricted to admins or superadmins.", "error")
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 def superadmin_required(f):
     @wraps(f)
@@ -493,8 +513,105 @@ def delete_employee(ssn):
 
     return redirect(url_for('view_employees'))
 
-
 ###################-----finish part above-------############################################################################################
+
+# Route to view all projects
+@app.route('/projects')
+def view_projects():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if session['department id'] != None:
+        dnum = session['department id']
+        cursor.execute("SELECT Pnumber, Pname, Plocation, %s FROM Project", (dnum, ))
+        projects = cursor.fetchall()
+
+    else: 
+        cursor.execute("SELECT Pnumber, Pname, Plocation, Dnum FROM Project")
+        projects = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return render_template('projects.html', projects=projects)
+
+# Route to add a new project
+@app.route('/projects/add', methods=('GET', 'POST'))
+@superadmin_or_admin_required
+def add_project():
+    if request.method == 'POST':
+        pname = request.form['pname']
+        pnumber = request.form['pnumber']
+        plocation = request.form['plocation']
+        dnum = request.form['dnum']
+
+        # if the user isn't a superadmin - they are restricted to only adding projects to their own department
+        if session['department_id'] != None:
+            dnum = session['department_id']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO Project (Pname, Pnumber, Plocation, Dnum) VALUES (%s, %s, %s, %s)", (
+                pname, pnumber, plocation, dnum)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_projects'))
+
+    return render_template('add_project.html')
+
+
+# Route to update a project
+@app.route('/projects/update/<int:pnumber>', methods=('GET', 'POST'))
+def update_project(pnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        pname = request.form['pname']
+        plocation = request.form['plocation']
+        dnum = request.form['dnum']
+
+        cursor.execute("UPDATE Project SET Pname = %s, Plocation = %s, Dnum = %s WHERE Pnumber = %s",
+                       (pname, plocation, dnum, pnumber))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_projects'))
+
+    cursor.execute(
+        "SELECT Pnumber, Pname, Plocation, Dnum FROM Project WHERE Pnumber = %s", (pnumber,))
+    project = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return render_template('update_project.html', project=project)
+
+# Route to delete a project
+
+
+@app.route('/projects/delete/<int:pnumber>', methods=('POST',))
+def delete_project(pnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if session['department id'] == None:
+        cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
+    else: 
+        cursor.execute("SELECT FROM Project, Department WHERE Pnumber = %s AND Dnumber = %s AND Dnum = Dnumber", 
+                       (pnumber, session['department id']))
+        project = cursor.fetchall()
+        if project:
+            cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
+        else: 
+            conn.rollback()
+            flash("Failed to delete project - the project is not in the correct department.", "delete_project_error")
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('view_projects'))
+
 
 # keep for backup page
 @app.route('/testing')
