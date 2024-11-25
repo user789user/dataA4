@@ -657,9 +657,9 @@ def add_worksOn():
         return redirect(url_for('view_worksOn'))
     return render_template('add_worksOn.html')
        
-       
-#ADD SECURITY HERE 
+        
 @app.route('/worksOn/update/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
+@superadmin_or_admin_required
 def update_worksOn(ssn, pnumber):
     conn = get_db_connection()
     cursor = conn.cursor() 
@@ -675,6 +675,7 @@ def update_worksOn(ssn, pnumber):
     cursor.close()
     conn.close()
     return render_template('update_worksOn.html',worksOn=worksOn)               
+
 
 @app.route('/worksOn/delete/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
 def delete_worksOn(ssn, pnumber):
@@ -695,6 +696,8 @@ def delete_worksOn(ssn, pnumber):
     cursor.close()
     conn.close()
     return redirect(url_for('view_worksOn'))
+
+
 # keep for backup page
 @app.route('/testing')
 def testing():
