@@ -80,8 +80,8 @@
         <td>{{ project[3] }}</td>
         <td class="actions">
             {% if session.get('role_id') in [1, 2] %}
-                <a href="/projects/update/{{ projects[1] }}" class="update">Update</a>
-                <form action="/projects/delete/{{ projects[1] }}" method="post" style="display:inline;">
+                <a href="/projects/update/{{ project[0] }}" class="update">Update</a>
+                <form action="/projects/delete/{{ project[0] }}" method="post" style="display:inline;">
                     <button type="submit" class="delete" onclick="return confirm('Are you sure you want to delete this project?');">
                         Delete
                     </button>
