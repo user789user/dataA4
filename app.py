@@ -542,7 +542,7 @@ def view_projects():
 def add_project():
     if request.method == 'POST':
         pname = request.form['pname']
-        pnumber = request.form['pnumber']
+        pnumber = request.form['pnum']
         plocation = request.form['plocation']
         dnum = request.form['dnum']
 
