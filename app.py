@@ -576,9 +576,24 @@ def update_project(pnumber):
         plocation = request.form['plocation']
         dnum = request.form['dnum']
 
-        cursor.execute("UPDATE Project SET Pname = %s, Plocation = %s, Dnum = %s WHERE Pnumber = %s",
+        if session['department id'] == None:
+            cursor.execute("UPDATE Project SET Pname = %s, Plocation = %s, Dnum = %s WHERE Pnumber = %s",
                        (pname, plocation, dnum, pnumber))
-        conn.commit()
+            conn.commit()
+        else:
+            cursor.execute("SELECT FROM Project, Department WHERE Pnumber = %s AND Dnumber = %s AND Dnum = Dnumber", 
+                       (pnumber, session['department_id']))
+            project = cursor.fetchall()
+
+            #if the project has the same dept, allow the 
+            if project:
+                cursor.execute("UPDATE Project SET Pname = %s, Plocation = %s, Dnum = %s WHERE Pnumber = %s",
+                       (pname, plocation, dnum, pnumber))
+                conn.commit()
+            else:
+                conn.rollback()
+                flash("Failed to update project - the project is not in the correct department.", "update_project_error")
+        
         cursor.close()
         conn.close()
         return redirect(url_for('view_projects'))
@@ -593,23 +608,25 @@ def update_project(pnumber):
 
 # Route to delete a project
 @app.route('/projects/delete/<int:pnumber>', methods=('POST',))
+@superadmin_or_admin_required
 def delete_project(pnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     if session['department_id'] == None:
         cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
+        conn.commit()
     else: 
         cursor.execute("SELECT FROM Project, Department WHERE Pnumber = %s AND Dnumber = %s AND Dnum = Dnumber", 
                        (pnumber, session['department_id']))
         project = cursor.fetchall()
         if project:
             cursor.execute("DELETE FROM Project WHERE Pnumber = %s", (pnumber,))
+            conn.commit()
         else: 
             conn.rollback()
             flash("Failed to delete project - the project is not in the correct department.", "delete_project_error")
 
-    conn.commit()
     cursor.close()
     conn.close()
     return redirect(url_for('view_projects'))
