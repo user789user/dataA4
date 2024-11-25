@@ -656,7 +656,9 @@ def add_worksOn():
         conn.close()
         return redirect(url_for('view_worksOn'))
     return render_template('add_worksOn.html')
-        
+       
+       
+#ADD SECURITY HERE 
 @app.route('/worksOn/update/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
 def update_worksOn(ssn, pnumber):
     conn = get_db_connection()
@@ -673,6 +675,26 @@ def update_worksOn(ssn, pnumber):
     cursor.close()
     conn.close()
     return render_template('update_worksOn.html',worksOn=worksOn)               
+
+@app.route('/worksOn/delete/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
+def delete_worksOn(ssn, pnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    if session['department_id'] == None:
+        cursor.execute("DELETE FROM Works_On WHERE Pno=%s And Essn=%s", (pnumber, ssn,))
+    else:
+        cursor.execute("SELECT FROM Works_On, Employee WHERE Pno=%s And Essn=%s And Essn=SSN And Dno=%s",(pnumber,ssn,session['department_id']))
+        worksOn = cursor.fetchall()
+        if worksOn:
+            cursor.execute("DELETE FROM Works_On WHERE Pno=%s And Essn=%s", (pnumber,ssn))
+        else:
+            conn.rollback()
+            flash("Failed to delete works on - incorrect department")
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('view_worksOn'))
 # keep for backup page
 @app.route('/testing')
 def testing():
