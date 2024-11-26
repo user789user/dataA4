@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Update Department Location</title>
+</head>
+<body>
+    <h1>Update Location</h1>
+    <form method="post">
+        <label for="dlocation">Project Name:</label>
+        <input type="text" name="dlocation" value="{{ dept_location[1] }}" required><br>
+
+        <input type="submit" value="Update Project">
+    </form>
+    <a href="{{ url_for('view_locations') }}">Back to Projects</a>
+</body>
+</html>

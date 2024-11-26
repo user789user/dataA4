@@ -734,6 +734,122 @@ def view_dependents():
     conn.close()
     return render_template('view_dependents.html', dependents=dependents)
 
+#department location views
+
+# Route to view all locations
+@app.route('/locations')
+def view_locations():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if session['department_id'] != None:
+        dnumber = session['department_id']
+        cursor.execute("SELECT Dnumber, Dlocation FROM Dept_location WHERE Dnumber=%s", (dnumber, ))
+        locations = cursor.fetchall()
+
+    else: 
+        cursor.execute("SELECT Dnumber, Dlocation FROM Dept_location")
+        locations = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return render_template('view_locations.html', locations=locations)
+
+
+# Route to add a new department location
+@app.route('/locations/add', methods=('GET', 'POST'))
+@superadmin_required
+def add_location():
+    if request.method == 'POST':
+        pname = request.form['pname']
+        pnumber = request.form['pnum']
+        plocation = request.form['plocation']
+        dnum = request.form['dnum']
+
+        # if the user isn't a superadmin - they are restricted to only adding projects to their own department
+        if session['department_id'] != None:
+            dnum = session['department_id']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO Project (Pname, Pnumber, Plocation, Dnum) VALUES (%s, %s, %s, %s)", (
+                pname, pnumber, plocation, dnum)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_projects'))
+
+    return render_template('add_project.html')
+
+
+# Route to update a project
+@app.route('/location/update/<int:pnumber>', methods=('GET', 'POST'))
+@superadmin_required
+def update_location(dnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        dlocation = request.form['dlocation']
+
+        if session['department_id'] == None:
+            cursor.execute("UPDATE Dept_location SET Dlocation = %s WHERE Dnumber = %s",
+                       (dlocation, dnumber))
+            conn.commit()
+        else:
+            cursor.execute("SELECT FROM Dept_location AS DL, Department AS D WHERE DL.Dnumber = %s AND D.Dnumber = %s AND DL.Dnumber = D.Dnumber", 
+                       (dnumber, session['department_id']))
+            location = cursor.fetchall()
+
+            #if the location has the same dept, allow the user to update it
+            if location:
+                cursor.execute("UPDATE Dept_location SET Dlocation = %s WHERE Dnumber = %s",
+                       (dlocation, dnumber))
+                conn.commit()
+            else:
+                conn.rollback()
+                flash("Failed to update - the department location is not in the correct department.", "update_project_error")
+        
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_locations'))
+
+    cursor.execute(
+        "SELECT Dnumber, Dlocation FROM Dept_location WHERE Dnumber = %s", (dnumber,))
+    location = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return render_template('update_location.html', location=location)
+
+
+# Route to delete a project
+@app.route('/locations/delete/<int:pnumber>', methods=('POST',))
+@superadmin_required
+def delete_location(dnumber):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if session['department_id'] == None:
+        cursor.execute("DELETE FROM Dept_location WHERE Dnumber = %s", (dnumber,))
+        conn.commit()
+    else: 
+        cursor.execute("SELECT FROM Dept_location AS DL, Department AS D WHERE DL.Dnumber = %s AND D.Dnumber = %s AND DL.Dnumber = D.Dnumber", 
+                       (dnumber, session['department_id']))
+        location = cursor.fetchall()
+        if location:
+            cursor.execute("DELETE FROM Dept_location WHERE Dnumber = %s", (dnumber,))
+            conn.commit()
+        else: 
+            conn.rollback()
+            flash("Failed to delete - the department location is not in the correct department.", "delete_location_error")
+
+    cursor.close()
+    conn.close()
+    return redirect(url_for('view_locations'))
+
+
 # keep for backup page
 @app.route('/testing')
 def testing():
