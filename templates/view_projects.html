@@ -61,7 +61,7 @@
 
 <!-- Add New Employee Link -->
 {% if session.get('role_id') in [1, 2] %}
-<a href="/projects/add" style="float: right;">➕ Add New Project</a>
+<a href="/projects/add" style="float: right;">➕ Add New Project</a> <!-- Either Deparment Admins or Admins can add a project -->
 {% endif %}
 
 <table>
