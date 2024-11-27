@@ -9,16 +9,20 @@
             padding: 20px;
             background-color: #f9f9f9;
         }
+
         h1 {
             color: #4CAF50;
         }
+
         form {
             margin-top: 20px;
             max-width: 500px;
         }
+
         label {
             font-weight: bold;
         }
+
         input[type="text"], input[type="number"], input[type="email"] {
             width: 100%;
             padding: 8px;
@@ -26,6 +30,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         input[type="submit"] {
             background-color: #4CAF50;
             color: white;
@@ -35,9 +40,11 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+
         a {
             display: inline-block;
             margin-top: 20px;
@@ -48,47 +55,59 @@
     </style>
 </head>
 <body>
-    <h1>Add New Employee</h1>
-    <form method="post">
-        <!-- Employee Name -->
-        <label for="fname">First Name:</label>
-        <input type="text" id="fname" name="fname" required>
+<h1>Add New Employee</h1>
+<form method="post">
+    <!-- Employee Name -->
+    <label for="fname">First Name:</label>
+    <input type="text" id="fname" name="fname" maxlength="10" required placeholder="Max 10 characters" >
 
-        <label for="minit">Middle Initial:</label>
-        <input type="text" id="minit" name="minit" maxlength="1">
+    <label for="minit">Middle Initial:</label>
+    <input type="text" id="minit" name="minit" maxlength="1" placeholder="One letter">
 
-        <label for="lname">Last Name:</label>
-        <input type="text" id="lname" name="lname" required>
+    <label for="lname">Last Name:</label>
+    <input type="text" id="lname" name="lname" maxlength="10" required placeholder="Max 10 characters" >
 
-        <!-- SSN -->
-        <label for="ssn">Social Security Number (SSN):</label>
-        <input type="text" id="ssn" name="ssn" required>
+    <!-- SSN -->
+    <label for="ssn">Social Security Number (SSN):</label>
+    <input type="text" id="ssn" name="ssn" pattern="\d{9}" maxlength="9" required placeholder="9 digits">
 
-        <!-- Address -->
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address" required>
+    <!-- Address -->
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" maxlength="15" required placeholder="Max 15 characters">
 
-        <!-- Sex -->
-        <label for="sex">Sex:</label>
-        <input type="text" id="sex" name="sex" maxlength="1" placeholder="M/F" required>
+    <!-- Sex -->
+    <label for="sex">Sex:</label>
+    <input type="text" id="sex" name="sex" maxlength="1" placeholder="M/F">
 
-        <!-- Salary -->
-        <label for="salary">Salary:</label>
-        <input type="number" id="salary" name="salary" required>
+    <!-- Salary -->
+    <label for="salary">Salary:</label>
+    <input type="number" id="salary" name="salary" required placeholder="Integer value">
 
-        <!-- Supervisor SSN -->
-        <label for="super_ssn">Supervisor SSN:</label>
-        <input type="text" id="super_ssn" name="super_ssn">
+    <!-- Supervisor SSN -->
+    <label for="super_ssn">Supervisor SSN:</label>
+    <input type="text" id="super_ssn" name="super_ssn" pattern="\d{9}" maxlength="9" required placeholder="9 digits">
 
-        <!-- Department Number -->
-        <label for="dno">Department Number:</label>
-        <input type="number" id="dno" name="dno" required>
+    <!-- Department Number -->
+    <label for="dno">Department Number:</label>
+    <select id="dno" name="dno" required>
+        <option value="" disabled selected>Select a department</option>
+        {% for department in all_dnumbers %}
+        <option value="{{ department }}">{{ department }}</option>
+        {% endfor %}
+    </select><br><br>
 
-        <!-- Submit Button -->
-        <input type="submit" value="Add Employee">
-    </form>
 
-    <!-- Back to Employees Link -->
-    <a href="{{ url_for('view_employees') }}">⬅ Back to Employees</a>
+    <label for="bdate">Birth of Date:</label>
+    <input type="date" id="bdate" name="bdate" required>
+
+    <label for="empdate">Employment Date:</label>
+    <input type="date" id="empdate" name="empdate" required><br><br>
+    <!-- Submit Button -->
+    <input type="submit" value="Add Employee">
+</form>
+
+<!-- Back to Employees Link -->
+<a href="{{ url_for('view_employees') }}">⬅ Back to Employees</a>
+
 </body>
 </html>

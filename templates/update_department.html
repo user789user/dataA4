@@ -4,19 +4,33 @@
     <title>Update Department</title>
 </head>
 <body>
-    <h1>Update Department</h1>
-    <form method="post">
-        <label for="dnumber">Department ID:</label>
-        <input type="text" name="dnumber" value="{{ department[0] }}" required><br>
+<h1>Update Department</h1>
+<form method="post">
+    <label for="dnumber">Department ID:</label>
+    <input type="text" name="dnumber" value="{{ department[0] }}" required readonly><br><br>
 
-        <label for="dname">Department Name:</label>
-        <input type="text" name="dname" value="{{ department[1] }}" required><br>
+    <label for="dname">Department Name:</label>
+    <input type="text" name="dname" value="{{ department[1] }}" maxlength="15" required placeholder="Max 15 characters"><br><br>
 
-        <label for="mgr_ssn">Manager SSN:</label>
-        <input type="text" name="mgr_ssn" value="{{ department[2] }}" required><br>
+    <label for="mgr_ssn">Manager SSN:</label>
+    <select name="mgr_ssn" required>
+        <option value="">-- Select Manager SSN --</option>
+        {% for ssn in employee_ssns %}
+            <option value="{{ ssn }}" {% if ssn == department[2] %}selected{% endif %}>{{ ssn }}</option>
+        {% endfor %}
+    </select><br><br>
 
-        <input type="submit" value="Update Department">
-    </form>
-    <a href="{{ url_for('view_departments') }}">Back to Departments</a>
+    <input type="submit" value="Update Department">
+</form>
+<a href="{{ url_for('view_departments') }}">⬅ Back to Departments</a>
+<div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="alert alert-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
 </body>
 </html>

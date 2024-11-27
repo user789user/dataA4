@@ -22,11 +22,16 @@
     </select>
 
     <label for="departmentid">Department ID:</label>
-    <input type="text" id="departmentid" name="departmentid" placeholder="Optional for Superadmin">
+    <select id="departmentid" name="departmentid">
+        <option value="">None (for Super Admin)</option> <!-- Optional -->
+        {% for dnumber in all_dnumbers %}
+            <option value="{{ dnumber }}">{{ dnumber }}</option>
+        {% endfor %}
+    </select><br><br>
 
-    <button type="submit">Create User</button>
+    <button type="submit">Create User</button><br><br>
 </form>
-<a href="{{ url_for('base') }}">Back to Dashboard</a>
+<a href="{{ url_for('view_users') }}">Back to Users</a>
 <div class="flash-messages">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

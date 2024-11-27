@@ -45,6 +45,7 @@ def admin_required(f):
 
     return decorated_function
 
+
 def superadmin_or_admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -66,6 +67,7 @@ def superadmin_or_admin_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
 
 def superadmin_required(f):
     @wraps(f)
@@ -91,8 +93,8 @@ def superadmin_required(f):
 
 #####################################################################################################################################
 @app.route('/')
-@login_required
 def index():
+    session.pop('_flashes', None)
     return render_template('login.html', username=session.get('username'))
 
 
@@ -105,7 +107,7 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT u.id, u.password_hash, u.role_id, u.department_id, 
+            SELECT u.id, u.password_hash, u.role_id, u.department_id,
                    COALESCE(d.dname, 'All Departments') AS dname
             FROM Users u
             LEFT JOIN Department d ON u.department_id = d.dnumber
@@ -150,6 +152,7 @@ def view_users():
     """
     View all users. Only accessible by Super Admin.
     """
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -173,22 +176,30 @@ def update_user(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Fetch all department IDs to populate the dropdown
+    cursor.execute("SELECT dnumber FROM Department")
+    all_dnumbers = [row[0] for row in cursor.fetchall()]
+
     if request.method == 'POST':
         # Fetch form data
         role_id = request.form['role_id']
         department_id = request.form.get('department_id')  # Allow None for Super Admin
 
+        # Convert empty string to None
+        if department_id == "":
+            department_id = None
+
         # Update user details in the database
         cursor.execute("""
-            UPDATE users 
-            SET role_id = %s, department_id = %s 
+            UPDATE users
+            SET role_id = %s, department_id = %s
             WHERE id = %s
-        """, (role_id, department_id if department_id else None, user_id))
+        """, (role_id, department_id, user_id))
         conn.commit()
         cursor.close()
         conn.close()
 
-        flash("User updated successfully!", "suser_update_uccess")
+        flash("User updated successfully!", "update_success")
         return redirect(url_for('view_users'))
 
     # Fetch user details for the given user_id
@@ -201,7 +212,7 @@ def update_user(user_id):
         flash("User not found!", "user_not_found_error")
         return redirect(url_for('view_users'))
 
-    return render_template('update_user.html', user=user)
+    return render_template('update_user.html', user=user, all_dnumbers=all_dnumbers)
 
 
 @app.route('/users/delete/<int:user_id>', methods=['POST'])
@@ -230,29 +241,44 @@ def delete_user(user_id):
 @app.route('/register', methods=['GET', 'POST'])
 @superadmin_required
 def register():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch all department IDs to populate the dropdown
+    cursor.execute("SELECT dnumber FROM Department")
+    all_dnumbers = [row[0] for row in cursor.fetchall()]  # Convert to a list
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         hashed_password = generate_password_hash(password)
         role_id = request.form['roleid']
-        department_id = request.form.get('departmentid') or None  # Convert empty string to None
+        department_id = request.form.get('departmentid')  # Optional
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        # Convert empty string to None
+        if department_id == "":
+            department_id = None
+
         try:
             cursor.execute(
                 "INSERT INTO Users (username, password_hash, role_id, department_id) VALUES (%s, %s, %s, %s)",
-                (username, hashed_password, role_id, department_id))
+                (username, hashed_password, role_id, department_id)
+            )
             conn.commit()
             flash('User created successfully!', 'create')
         except Exception as e:
-            flash(f"Error creating user: {e}", 'error')
             conn.rollback()
+            flash(f"Error creating user: {e}", 'error')
         finally:
             cursor.close()
             conn.close()
 
-    return render_template('register.html')
+        return redirect(url_for('view_users'))
+
+    # Pass `all_dnumbers` to the template
+    cursor.close()
+    conn.close()
+    return render_template('register.html', all_dnumbers=all_dnumbers)
 
 
 # department below
@@ -286,23 +312,38 @@ def view_departments():
 
 @app.route('/departments/add', methods=('GET', 'POST'))
 def add_department():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch all SSNs from Employee table
+    cursor.execute("SELECT SSN FROM Employee")
+    employee_ssns = [row[0] for row in cursor.fetchall()]  # Convert to a list of SSNs
+
     if request.method == 'POST':
         dname = request.form['dname']
         dnumber = request.form['dnumber']
         mgr_ssn = request.form['mgr_ssn']
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO Department (Dname, Dnumber, Mgr_ssn) VALUES (%s, %s, %s)",
-            (dname, dnumber, mgr_ssn)
-        )
-        conn.commit()
-        cursor.close()
-        conn.close()
+        try:
+            cursor.execute(
+                "INSERT INTO Department (Dname, Dnumber, Mgr_ssn) VALUES (%s, %s, %s)",
+                (dname, dnumber, mgr_ssn)
+            )
+            conn.commit()
+            flash("Department added successfully!", "success")
+        except psycopg2.IntegrityError:
+            conn.rollback()
+            flash("Failed to add department. Ensure the Department Number and Manager SSN are valid and unique.",
+                  "error")
+        finally:
+            cursor.close()
+            conn.close()
+
         return redirect(url_for('view_departments'))
 
-    return render_template('add_department.html')
+    cursor.close()
+    conn.close()
+    return render_template('add_department.html', employee_ssns=employee_ssns)
 
 
 @app.route('/departments/update/<int:dnumber>', methods=('GET', 'POST'))
@@ -313,6 +354,10 @@ def update_department(dnumber):
     """
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Fetch all SSNs from Employee table
+    cursor.execute("SELECT SSN FROM Employee")
+    employee_ssns = [row[0] for row in cursor.fetchall()]  # Convert to a list of SSNs
 
     if request.method == 'POST':
         new_dnumber = request.form['dnumber']
@@ -339,14 +384,15 @@ def update_department(dnumber):
     cursor.execute(
         "SELECT Dnumber, Dname, Mgr_ssn FROM Department WHERE Dnumber = %s", (dnumber,))
     department = cursor.fetchone()
-    cursor.close()
-    conn.close()
 
     if not department:
         flash("Department not found!", "error")
         return redirect(url_for('view_departments'))
 
-    return render_template('update_department.html', department=department)
+    cursor.close()
+    conn.close()
+
+    return render_template('update_department.html', department=department, employee_ssns=employee_ssns)
 
 
 @app.route('/departments/delete/<int:dnumber>', methods=('POST',))
@@ -375,16 +421,18 @@ def view_employees():
 
     try:
         if role_id == 1:  # Super Admin
-            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee")
-        elif role_id == 2:  # Department Admin
-            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
-        elif role_id == 3:  # Normal User
-            cursor.execute("SELECT SSN, Fname, Minit, Lname, Address, Salary, Dno FROM Employee WHERE Dno = %s", (department_id,))
+            cursor.execute(
+                "SELECT Fname, Minit, Lname, SSN, Address, Sex, Salary, Super_ssn, Dno, Bdate, Empdate FROM Employee")
+        elif role_id in [2, 3]:  # Department Admin&user
+            cursor.execute(
+                "SELECT Fname, Minit, Lname, SSN, Address, Sex, Salary, Super_ssn, Dno, Bdate, Empdate FROM Employee WHERE Dno = %s",
+                (department_id,))
         else:
             flash("Access denied. You do not have permission to view employees.", "view_employee_error")
             return redirect(url_for('base'))
 
         employees = cursor.fetchall()
+
     except psycopg2.Error as e:
         flash(f"An error occurred while fetching employees: {e}", "view_employee_fetch_error")
         employees = []
@@ -404,27 +452,31 @@ def add_employee():
     role_id = session.get('role_id')
     department_id = session.get('department_id')
 
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""SELECT dnumber FROM Department""")
+    all_dnumbers = [row[0] for row in cursor.fetchall()]
+
     if role_id not in [1, 2]:
         flash("Access denied. Only Admins and Super Admins can add employees.", "add_employee_error")
         return redirect(url_for('view_employees'))
 
     if request.method == 'POST':
         fname = request.form['fname']
-        minit = request.form.get['minit']
+        minit = request.form.get('minit', None)
         lname = request.form['lname']
         ssn = request.form['ssn']
         address = request.form['address']
-        sex = request.form['sex']
+        sex = request.form.get('sex', None)
         salary = request.form['salary']
-        super_ssn = request.form.get['super_ssn']
+        super_ssn = request.form.get('super_ssn', None)
         dno = request.form['dno']
 
         if role_id == 2 and int(dno) != department_id:
             flash("You can only add employees to your department.", "add_employee_2_error")
             return redirect(url_for('view_employees'))
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
         try:
             cursor.execute("""
                 INSERT INTO Employee (Fname, Minit, Lname, SSN, Address, Sex, Salary, Super_ssn, Dno)
@@ -441,54 +493,57 @@ def add_employee():
             conn.close()
         return redirect(url_for('view_employees'))
 
-    return render_template('add_employee.html')
+    cursor.close()
+    conn.close()
+    return render_template('add_employee.html', all_dnumbers=all_dnumbers)
 
 
 @app.route('/employees/update/<ssn>', methods=('GET', 'POST'))
 @login_required
 def update_employee(ssn):
-    """
-    Update employee details.
-    """
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Fetch employee details for the given SSN
+    cursor.execute("""
+        SELECT Fname, Minit, Lname, SSN, Address, Sex, Salary, Super_ssn, Dno, Bdate, Empdate
+        FROM Employee
+        WHERE SSN = %s
+    """, (str(ssn),))  # Ensure SSN is passed as a string
+
+    employee = cursor.fetchone()
+
+    cursor.execute("""SELECT dnumber FROM Department""")
+    all_dnumbers = [row[0] for row in cursor.fetchall()]
 
     if request.method == 'POST':
         # Fetch data from the form
         fname = request.form['fname']
+        minit = request.form['minit']
         lname = request.form['lname']
         address = request.form['address']
+        sex = request.form['sex']
         salary = request.form['salary']
+        super_ssn = request.form['super_ssn']
         dno = request.form['dno']
 
         # Update employee details in the database
         cursor.execute("""
             UPDATE Employee
-            SET Fname = %s, Lname = %s, Address = %s, Salary = %s, Dno = %s
+            SET Fname = %s, Minit = %s, Lname = %s, Address = %s, Sex = %s, Salary = %s, Super_ssn = %s, Dno = %s
             WHERE SSN = %s
-        """, (fname, lname, address, salary, dno, ssn))
+        """, (fname, minit, lname, address, sex, salary, super_ssn, dno, ssn))
         conn.commit()
-        cursor.close()
-        conn.close()
 
         flash("Employee updated successfully!", "update_employee_success")
         return redirect(url_for('view_employees'))
 
-    # Fetch employee details for the given SSN
-    cursor.execute("""
-        SELECT SSN, Fname, Lname, Address, Salary, Dno
-        FROM Employee
-        WHERE SSN = %s
-    """, (str(ssn),))  # Ensure SSN is passed as a string
-    employee = cursor.fetchone()
-    cursor.close()
-    conn.close()
-
     if not employee:
         flash("Employee not found!", "update_employee_error")
         return redirect(url_for('view_employees'))
-
-    return render_template('update_employee.html', employee=employee)
+    cursor.close()
+    conn.close()
+    return render_template('update_employee.html', employee=employee, all_dnumbers=all_dnumbers)
 
 
 @app.route('/employees/delete/<ssn>', methods=['POST'])
@@ -504,7 +559,7 @@ def delete_employee(ssn):
         # Ensure SSN is treated as a string
         cursor.execute("DELETE FROM Employee WHERE SSN = %s", (str(ssn),))
         conn.commit()
-        flash("Employee deleted successfully!", "delete_employee_success")
+        flash(f"Employee {ssn} deleted successfully!", "delete_employee_success")
     except psycopg2.Error as e:
         conn.rollback()
         flash("Failed to delete employee. Please try again.", "delete_employee_error")
@@ -514,7 +569,8 @@ def delete_employee(ssn):
 
     return redirect(url_for('view_employees'))
 
-###################-----finish part above-------############################################################################################
+
+###############################################changes above###########################################################
 
 # Route to view all projects
 @app.route('/projects')

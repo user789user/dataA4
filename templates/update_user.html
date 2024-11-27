@@ -18,10 +18,16 @@
         </select><br><br>
 
         <label for="department_id">Department ID:</label>
-        <input type="text" id="department_id" name="department_id" value="{{ user[3] or '' }}"> <!-- Allow blank for Super Admin -->
-        <br><br>
+        <select id="department_id" name="department_id">
+            <option value="">None (for Super Admin)</option> <!-- Optional -->
+            {% for dnumber in all_dnumbers %}
+                <option value="{{ dnumber }}" {% if user[3] == dnumber %}selected{% endif %}>
+                    {{ dnumber }}
+                </option>
+            {% endfor %}
+        </select><br><br>
 
-        <input type="submit" value="Update User">
+        <input type="submit" value="Update User"><br><br>
     </form>
     <a href="{{ url_for('view_users') }}">⬅ Back to Users</a>
 
