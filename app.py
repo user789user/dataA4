@@ -648,7 +648,7 @@ def view_worksOn():
     cursor = conn.cursor()
     if session['department_id'] != None:
         dnum = session['department_id']
-        cursor.execute("SELECT Essn, Pno, Hours FROM Works_On, Employee WHERE Essn=SSN And Dno = %s",(dnum,))
+        cursor.execute("SELECT Essn, Pno, Hours FROM Works_On, Project WHERE Pno=Pnumber And Dnum = %s",(dnum,))
         worksOn = cursor.fetchall()
     else:
         cursor.execute("SELECT Essn, Pno, Hours FROM Works_On")
@@ -669,7 +669,7 @@ def add_worksOn():
         if session['department_id'] != None:
             conn=get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT Dno FROM Employee WHERE SSN=%s",(Essn,))
+            cursor.execute("SELECT Dnum FROM Project WHERE Pnumber=%s",(Pno,))
             Dno = cursor.fetchone()
             if(Dno[0] != session['department_id']):
                 flash("You can only assign work to employees within your own department.")
@@ -694,6 +694,12 @@ def update_worksOn(ssn, pnumber):
     cursor = conn.cursor() 
     if request.method == 'POST':
         Hours = request.form['Hours']
+        if session['department_id'] != None:
+            cursor.execute("SELECT Dnum FROM Project WHERE Pnumber=%s",(pnumber,))
+            Dno = cursor.fetchone()
+            if(Dno[0] != session['department_id']):
+                flash("You can only update work to projects within your department.")
+                return redirect(url_for('view_worksOn'))
         cursor.execute("UPDATE Works_On SET Hours = %s WHERE Pno=%s And Essn=%s", (Hours,pnumber,ssn))
         conn.commit()
         cursor.close()
@@ -707,6 +713,7 @@ def update_worksOn(ssn, pnumber):
 
 # Delete Works On
 @app.route('/worksOn/delete/<string:ssn>/<int:pnumber>', methods=('GET', 'POST'))
+@superadmin_or_admin_required
 def delete_worksOn(ssn, pnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -714,7 +721,7 @@ def delete_worksOn(ssn, pnumber):
     if session['department_id'] == None:
         cursor.execute("DELETE FROM Works_On WHERE Pno=%s And Essn=%s", (pnumber, ssn,))
     else:
-        cursor.execute("SELECT FROM Works_On, Employee WHERE Pno=%s And Essn=%s And Essn=SSN And Dno=%s",(pnumber,ssn,session['department_id']))
+        cursor.execute("SELECT FROM Works_On, Project WHERE Pno=%s And Essn=%s And Essn=SSN And Dno=%s",(pnumber,ssn,session['department_id']))
         worksOn = cursor.fetchall()
         if worksOn:
             cursor.execute("DELETE FROM Works_On WHERE Pno=%s And Essn=%s", (pnumber,ssn))
