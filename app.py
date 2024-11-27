@@ -829,7 +829,16 @@ def view_locations():
 
     if session['department_id'] != None:
         dnumber = session['department_id']
-        cursor.execute("SELECT Dnumber, Dlocation FROM Dept_location WHERE Dnumber=%s", (dnumber, ))
+        try:
+            cursor.execute("CREATE VIEW LocationsByDept AS SELECT Dnumber, Dlocation FROM Dept_location WHERE Dnumber=%s", (dnumber,))
+            conn.commit()
+        except psycopg2.errors.DuplicateTable:
+            conn.rollback()
+            cursor.execute("DROP VIEW LocationsByDept")
+            cursor.execute("CREATE VIEW LocationsByDept AS SELECT Dnumber, Dlocation FROM Dept_location WHERE Dnumber=%s", (dnumber,))
+            conn.commit()
+
+        cursor.execute("SELECT * FROM LocationsByDept")
         locations = cursor.fetchall()
 
     else: 
