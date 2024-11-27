@@ -68,12 +68,13 @@
     <tr>
         <th>Department Location</th>
         <th>Department Number</th>
+        <th>Actions</th>
     </tr>
 
     {% for dept_location in locations %}
     <tr>
-        <td>{{ dept_location[0] }}</td>
         <td>{{ dept_location[1] }}</td>
+        <td>{{ dept_location[0] }}</td>
         <td class="actions">
            <!-- Update Button -->
            {% if session.get('role_id') == 1 %} <!-- Only Super Admin can update department locations -->
