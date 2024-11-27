@@ -6,11 +6,14 @@
 <body>
     <h1>Update Location</h1>
     <form method="post">
-        <label for="dlocation">Project Name:</label>
+        <label for="dnumber">Department Number:</label>
+        <input type="number" name="dnumber" value="{{ dept_location[0] }}" required><br>
+
+        <label for="dlocation">Location Name:</label>
         <input type="text" name="dlocation" value="{{ dept_location[1] }}" required><br>
 
-        <input type="submit" value="Update Project">
+        <input type="submit" value="Update Location">
     </form>
-    <a href="{{ url_for('view_locations') }}">Back to Projects</a>
+    <a href="{{ url_for('view_locations') }}">Back to Department Locations</a>
 </body>
 </html>

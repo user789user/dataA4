@@ -862,18 +862,19 @@ def add_location():
 
 
 # Route to update a location
-@app.route('/location/update/<int:pnumber>', methods=('GET', 'POST'))
+@app.route('/location/update/<int:dnumber>/<dlocation>', methods=('GET', 'POST'))
 @superadmin_required
-def update_location(dnumber):
+def update_location(dnumber, dlocation):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     if request.method == 'POST':
+        dnumber = request.form['dnumber']
         dlocation = request.form['dlocation']
 
         if session['department_id'] == None:
-            cursor.execute("UPDATE Dept_location SET Dlocation = %s WHERE Dnumber = %s",
-                       (dlocation, dnumber))
+            cursor.execute("UPDATE Dept_location SET Dlocation = %s AND Dnumber = %s WHERE Dnumber = %s AND Dlocation = %s",
+                       (dlocation, dnumber, dnumber, dlocation))
             conn.commit()
         else:
             cursor.execute("SELECT FROM Dept_location AS DL, Department AS D WHERE DL.Dnumber = %s AND D.Dnumber = %s AND DL.Dnumber = D.Dnumber", 
@@ -882,8 +883,8 @@ def update_location(dnumber):
 
             #if the location has the same dept, allow the user to update it
             if location:
-                cursor.execute("UPDATE Dept_location SET Dlocation = %s WHERE Dnumber = %s",
-                       (dlocation, dnumber))
+                cursor.execute("UPDATE Dept_location SET Dlocation = %s AND Dnumber = %s WHERE Dnumber = %s AND Dlocation = %s",
+                       (dlocation, dnumber, dnumber, dlocation))
                 conn.commit()
             else:
                 conn.rollback()
@@ -898,7 +899,7 @@ def update_location(dnumber):
     location = cursor.fetchone()
     cursor.close()
     conn.close()
-    return render_template('update_location.html', location=location)
+    return render_template('update_location.html', dept_location=location)
 
 
 # Route to delete a project
