@@ -895,7 +895,7 @@ def update_location(dnumber, dlocation):
         return redirect(url_for('view_locations'))
 
     cursor.execute(
-        "SELECT Dnumber, Dlocation FROM Dept_location WHERE Dnumber = %s", (dnumber,))
+        "SELECT Dnumber, Dlocation FROM Dept_location WHERE Dnumber = %s AND Dlocation = %s", (dnumber, dlocation))
     location = cursor.fetchone()
     cursor.close()
     conn.close()
