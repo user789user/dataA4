@@ -843,7 +843,7 @@ def view_locations():
 
 # Route to add a new department location
 @app.route('/locations/add', methods=('GET', 'POST'))
-@superadmin_required
+@superadmin_or_admin_required
 def add_location():
     if request.method == 'POST':
         dnumber = request.form['dnumber']
@@ -851,9 +851,21 @@ def add_location():
 
         conn = get_db_connection()
         cursor = conn.cursor()
-        # user already needs to be a superadmin to view this so no verification needed 
-        cursor.execute("INSERT INTO Dept_location (Dnumber, Dlocation) VALUES (%s, %s)", (dnumber, dlocation))
-        conn.commit()
+
+        if session['department id'] == None:
+            cursor.execute("INSERT INTO Dept_location (Dnumber, Dlocation) VALUES (%s, %s)", (dnumber, dlocation))
+            conn.commit()
+        else:
+            cursor.execute("SELECT FROM Dept_location AS DL, Department AS D WHERE DL.Dnumber = %s AND D.Dnumber = %s AND DL.Dnumber = D.Dnumber", 
+                       (dnumber, session['department_id']))
+            location = cursor.fetchall()
+            if location:
+                cursor.execute("INSERT INTO Dept_location (Dnumber, Dlocation) VALUES (%s, %s)", (dnumber, dlocation))
+                conn.commit()
+            else:
+                conn.rollback()
+                flash("Failed to insert - the department location is not in the correct department.", "add_location_error")
+
         cursor.close()
         conn.close()
         return redirect(url_for('view_locations'))
@@ -863,7 +875,7 @@ def add_location():
 
 # Route to update a location
 @app.route('/location/update/<int:dnumber>/<dlocation>', methods=('GET', 'POST'))
-@superadmin_required
+@superadmin_or_admin_required
 def update_location(dnumber, dlocation):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -888,7 +900,7 @@ def update_location(dnumber, dlocation):
                 conn.commit()
             else:
                 conn.rollback()
-                flash("Failed to update - the department location is not in the correct department.", "update_project_error")
+                flash("Failed to update - the department location is not in the correct department.", "update_location_error")
         
         cursor.close()
         conn.close()
@@ -904,7 +916,7 @@ def update_location(dnumber, dlocation):
 
 # Route to delete a project
 @app.route('/locations/delete/<int:dnumber>/<dlocation>', methods=('POST',))
-@superadmin_required
+@superadmin_or_admin_required
 def delete_location(dnumber, dlocation):
     conn = get_db_connection()
     cursor = conn.cursor()
