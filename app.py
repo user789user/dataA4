@@ -902,21 +902,21 @@ def update_location(dnumber):
 
 
 # Route to delete a project
-@app.route('/locations/delete/<int:pnumber>', methods=('POST',))
+@app.route('/locations/delete/<int:pnumber>/<dlocation>', methods=('POST',))
 @superadmin_required
-def delete_location(dnumber):
+def delete_location(dnumber, dlocation):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     if session['department_id'] == None:
-        cursor.execute("DELETE FROM Dept_location WHERE Dnumber = %s", (dnumber,))
+        cursor.execute("DELETE FROM Dept_location WHERE Dnumber = %s AND Dlocation = %s", (dnumber, dlocation))
         conn.commit()
     else: 
         cursor.execute("SELECT FROM Dept_location AS DL, Department AS D WHERE DL.Dnumber = %s AND D.Dnumber = %s AND DL.Dnumber = D.Dnumber", 
                        (dnumber, session['department_id']))
         location = cursor.fetchall()
         if location:
-            cursor.execute("DELETE FROM Dept_location WHERE Dnumber = %s", (dnumber,))
+            cursor.execute("DELETE FROM Dept_location WHERE Dnumber = %sAND Dlocation = %s", (dnumber, dlocation))
             conn.commit()
         else: 
             conn.rollback()

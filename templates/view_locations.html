@@ -81,7 +81,7 @@
         {% endif %}
            <!-- Delete Button -->
            {% if session.get('role_id') == 1 %} <!-- Only Super Admin can delete department locations -->
-                <form action="/location/delete/{{ dept_location[0] }}" method="post" style="display:inline;">
+                <form action="/location/delete/{{ dept_location[0] }}/{{ dept_location[1] }}" method="post" style="display:inline;">
                     <button type="submit" class="delete" onclick="return confirm('Are you sure you want to delete this department location?');">
                         Delete
                     </button>
