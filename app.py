@@ -546,17 +546,24 @@ def add_project():
         plocation = request.form['plocation']
         dnum = request.form['dnum']
 
-        # if the user isn't a superadmin - they are restricted to only adding projects to their own department
-        if session['department_id'] != None:
-            dnum = session['department_id']
-
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO Project (Pname, Pnumber, Plocation, Dnum) VALUES (%s, %s, %s, %s)", (
-                pname, pnumber, plocation, dnum)
-        )
-        conn.commit()
+
+        # if the user isn't a superadmin - they are restricted to only adding projects to their own department
+        if session['department_id'] == None:
+            cursor.execute("INSERT INTO Project (Pname, Pnumber, Plocation, Dnum) VALUES (%s, %s, %s, %s)", (
+                pname, pnumber, plocation, dnum))
+            conn.commit()
+        else:     
+            #if the project has the same dept as the user, allow the user to add it
+            if dnum == session['department_id']:
+                cursor.execute("UPDATE Project SET Pname = %s, Plocation = %s, Dnum = %s WHERE Pnumber = %s",
+                       (pname, plocation, dnum, pnumber))
+                conn.commit()
+            else:
+                conn.rollback()
+                flash("Failed to update project - the project is not in the correct department.", "update_project_error")
+
         cursor.close()
         conn.close()
         return redirect(url_for('view_projects'))
@@ -761,30 +768,22 @@ def view_locations():
 @superadmin_required
 def add_location():
     if request.method == 'POST':
-        pname = request.form['pname']
-        pnumber = request.form['pnum']
-        plocation = request.form['plocation']
-        dnum = request.form['dnum']
-
-        # if the user isn't a superadmin - they are restricted to only adding projects to their own department
-        if session['department_id'] != None:
-            dnum = session['department_id']
+        dnumber = request.form['dnumber']
+        dlocation = request.form['dlocation']
 
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO Project (Pname, Pnumber, Plocation, Dnum) VALUES (%s, %s, %s, %s)", (
-                pname, pnumber, plocation, dnum)
-        )
+        # user already needs to be a superadmin to view this so no verification needed 
+        cursor.execute("INSERT INTO Dept_location (Dnumber, Dlocation) VALUES (%s, %s)", (dnumber, dlocation))
         conn.commit()
         cursor.close()
         conn.close()
-        return redirect(url_for('view_projects'))
+        return redirect(url_for('view_locations'))
 
-    return render_template('add_project.html')
+    return render_template('add_location.html')
 
 
-# Route to update a project
+# Route to update a location
 @app.route('/location/update/<int:pnumber>', methods=('GET', 'POST'))
 @superadmin_required
 def update_location(dnumber):
