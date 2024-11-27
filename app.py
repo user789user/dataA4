@@ -311,6 +311,7 @@ def view_departments():
 
 
 @app.route('/departments/add', methods=('GET', 'POST'))
+@superadmin_required
 def add_department():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -396,6 +397,7 @@ def update_department(dnumber):
 
 
 @app.route('/departments/delete/<int:dnumber>', methods=('POST',))
+@superadmin_required
 def delete_department(dnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -574,6 +576,7 @@ def delete_employee(ssn):
 
 # Route to view all projects
 @app.route('/projects')
+@login_required
 def view_projects():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -699,6 +702,7 @@ def delete_project(pnumber):
 ### **** SHOULD WORKSON VIEW BE DEPENDENT ON DEPARTMENT OF EMPLOYEE OR DEPARTMENT OF PROJECT *****
 ###
 @app.route('/worksOn')
+@login_required
 def view_worksOn():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -792,6 +796,7 @@ def delete_worksOn(ssn, pnumber):
 #Dependents
 
 @app.route('/dependents')
+@login_required
 def view_dependents():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -834,12 +839,16 @@ def add_dependent():
         return redirect(url_for('view_dependents'))
     return render_template('add_dependent.html')
 
-##not secure yet for within department
 @app.route('/dependents/update/<string:ssn>/<string:depName>', methods=('GET', 'POST'))
 @superadmin_or_admin_required
 def update_dependents(ssn,depName):
     conn = get_db_connection()
     cursor = conn.cursor()
+    if session['department_id'] != None:
+            cursor.execute("SELECT Dno FROM Employee WHERE SSN=%s",(ssn,))
+            Dno = cursor.fetchone()
+            if(Dno[0] != session['department_id']):
+                return redirect(url_for('view_dependents'))
     if request.method == 'POST':
         Sex= request.form['Sex']
         Bdate = request.form['Birthday']
@@ -881,6 +890,7 @@ def delete_dependents(ssn, depName):
 
 # Route to view all locations
 @app.route('/locations')
+@login_required
 def view_locations():
     conn = get_db_connection()
     cursor = conn.cursor()
