@@ -733,13 +733,15 @@ def delete_worksOn(ssn, pnumber):
     conn.close()
     return redirect(url_for('view_worksOn'))
 
+#Dependents
+
 @app.route('/dependents')
 def view_dependents():
     conn = get_db_connection()
     cursor = conn.cursor()
     if session['department_id'] != None:
         dnum = session['department_id']
-        cursor.execute("SELECT Essn, Dependent_name, Sex, Bdate, Relationship FROM Dependent, Employee WHERE Essn=SSN and Dno=%s",(dnum,))
+        cursor.execute("SELECT Essn, Dependent_name, d.Sex, d.Bdate, Relationship FROM Dependent d, Employee E WHERE Essn=SSN and Dno=%s",(dnum,))
         dependents = cursor.fetchall()
     else:
         cursor.execute("SELECT Essn, Dependent_name, Sex, Bdate, Relationship FROM Dependent")
