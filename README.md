@@ -17,7 +17,7 @@
   - [ ] Dependent views
   - [ ] Dept_location views
   - [x] Employee views
-  - [X] Project views
+  - [ ] Project views
   - [ ] Works_on views
 
 ### 4. Authentication and Authorization
@@ -77,9 +77,9 @@
         ```
       - Create or Recreate the Database:
         ```plaintext
-        DROP DATABASE IF EXISTS a4_db;
-        CREATE DATABASE a4_db;
-        \c a4_db;
+        DROP DATABASE IF EXISTS app_company_a4;
+        CREATE DATABASE app_company_a4;
+        \c app_company_a4;
         ```
       - Run the `init_db.sql` script:
         ```plaintext
@@ -90,7 +90,7 @@
       Edit the `config.py` file to set the correct database connection details:
       ```python
       DATABASE_CONFIG = {
-          "dbname": "a4_db",
+          "dbname": "app_company_a4",
           "user": "your_username",
           "password": "your_password",
           "host": "localhost",
@@ -112,7 +112,7 @@
 
     | Role        | Username      | Password           |
     |-------------|---------------|--------------------|
-    | superadmin  | superadmin    | superkey           |
+    | superadmin  | superadmin    | superkey     |
     | admin       | admin         | adminkey           |
     | user        | user          | userkey            |       
         
