@@ -902,7 +902,7 @@ def update_location(dnumber):
 
 
 # Route to delete a project
-@app.route('/locations/delete/<int:pnumber>/<dlocation>', methods=('POST',))
+@app.route('/locations/delete/<int:dnumber>/<dlocation>', methods=('POST',))
 @superadmin_required
 def delete_location(dnumber, dlocation):
     conn = get_db_connection()
