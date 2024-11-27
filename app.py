@@ -873,7 +873,7 @@ def update_location(dnumber, dlocation):
         dlocation = request.form['dlocation']
 
         if session['department_id'] == None:
-            cursor.execute("UPDATE Dept_location SET Dlocation = %s AND Dnumber = %s WHERE Dnumber = %s AND Dlocation = %s",
+            cursor.execute("UPDATE Dept_location SET Dlocation = %s, Dnumber = %s WHERE Dnumber = %s AND Dlocation = %s",
                        (dlocation, dnumber, dnumber, dlocation))
             conn.commit()
         else:
