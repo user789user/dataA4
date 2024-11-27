@@ -8,8 +8,8 @@
 - [x] Superadmin can delete a user
 
 ### 2. Data Access Control
-- [ ] Department admin can view or edit data in their department
-- [ ] User can view data in their department
+- [x] Department admin can view or edit data in their department
+- [x] User can view data in their department
 
 ### 3. Views and Queries for Department-Specific Data
 - [x] Views and queries filtered by department for department admins and users:
