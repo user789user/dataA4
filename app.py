@@ -869,12 +869,12 @@ def update_location(dnumber, dlocation):
     cursor = conn.cursor()
 
     if request.method == 'POST':
-        dnumber = request.form['dnumber']
-        dlocation = request.form['dlocation']
+        dnumbernew = request.form['dnumber']
+        dlocationnew = request.form['dlocation']
 
         if session['department_id'] == None:
             cursor.execute("UPDATE Dept_location SET Dlocation = %s, Dnumber = %s WHERE Dnumber = %s AND Dlocation = %s",
-                       (dlocation, dnumber, dnumber, dlocation))
+                       (dlocationnew, dnumbernew, dnumber, dlocation))
             conn.commit()
         else:
             cursor.execute("SELECT FROM Dept_location AS DL, Department AS D WHERE DL.Dnumber = %s AND D.Dnumber = %s AND DL.Dnumber = D.Dnumber", 
