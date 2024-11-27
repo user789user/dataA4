@@ -62,9 +62,11 @@
         <label for="Sex">Sex:</label>
         <input type="text" id="Sex" name="Sex" maxlength="1" placeholder="M/F" required>
         
+        <!-- Birthdate -->
         <label for="Birthday">Birth date:</label>
         <input type="date" id="Birthday" name="Birthday" placeholder="YYYY-MM-DD" required>
 
+        <!-- Relationship -->
         <label for="Relationship">Relationship:</label>
         <input type="text" id="Relationship" name="Relationship" required>
 
@@ -73,6 +75,6 @@
     </form>
 
     <!-- Back to Projects Link -->
-    <a href="{{ url_for('view_dependents') }}">⬅ Back to Dependent</a>
+    <a href="{{ url_for('view_dependents') }}">⬅ Back to Dependents</a>
 </body>
 </html>
