@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Update Dependent</title>
+</head>
+<body>
+    <h1>Update Dependent</h1>
+    <form method="post">
+        <label for="Sex">Sex:</label>
+        <input type="text" name="Sex" value="{{ dependent[2] }}" required><br>
+
+        <label for="Birthday">Birthday:</label>
+        <input type="text" name="Birthday" value="{{ dependent[3] }}" required><br>
+
+        <label for="Relationship">Relationship:</label>
+        <input type="text" name="Relationship" value="{{ dependent[4] }}" required><br>
+
+        <input type="submit" value="Update Dependent">
+    </form>
+    <a href="{{ url_for('view_worksOn') }}">Back to Dependent</a>
+</body>
+</html>

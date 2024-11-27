@@ -741,6 +741,77 @@ def view_dependents():
     conn.close()
     return render_template('view_dependents.html', dependents=dependents)
 
+@app.route('/dependents/add', methods=('GET', 'POST'))
+@superadmin_or_admin_required
+def add_dependent():
+    if request.method == 'POST':
+        Essn = request.form['SSN']
+        Dependent_name = request.form['Dependent_Name']
+        Sex = request.form['Sex']
+        Bdate = request.form['Birthday']
+        Relationship = request.form['Relationship']
+        if session['department_id'] != None:
+            conn=get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT Dno FROM Employee WHERE SSN=%s",(Essn,))
+            Dno = cursor.fetchone()
+            if(Dno[0] != session['department_id']):
+                flash("You can only add dependents for your own department.")
+                return redirect(url_for('view_dependents'))
+            cursor.close()
+            conn.close()
+        conn=get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Dependent VALUES (%s, %s, %s, %s, %s)",(Essn, Dependent_name, Sex, Bdate, Relationship))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_dependents'))
+    return render_template('add_dependent.html')
+
+##not secure yet for within department
+@app.route('/dependents/update/<string:ssn>/<string:depName>', methods=('GET', 'POST'))
+@superadmin_or_admin_required
+def update_dependents(ssn,depName):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if request.method == 'POST':
+        Sex= request.form['Sex']
+        Bdate = request.form['Birthday']
+        Relationship = request.form['Relationship']
+        cursor.execute("UPDATE Dependent SET Sex = %s, Bdate = %s, Relationship = %s WHERE Essn = %s and Dependent_name = %s", (Sex,Bdate,Relationship,ssn,depName))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('view_dependents'))
+    cursor.execute("SELECT Essn, Dependent_name, Sex, Bdate, Relationship FROM Dependent WHERE Essn = %s and Dependent_name = %s",(ssn,depName,))
+    dependent = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return render_template('update_dependents.html',dependent=dependent)
+
+@app.route('/dependents/delete/<string:ssn>/<string:depName>', methods=('GET', 'POST'))
+@superadmin_or_admin_required
+def delete_dependents(ssn, depName):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    if session['department_id'] == None:
+        cursor.execute("DELETE FROM Dependent WHERE Dependent_name=%s And Essn=%s", (depName, ssn,))
+    else:
+        cursor.execute("SELECT FROM Employee WHERE Essn=%s And Dno=%s",ssn,session['department_id'])
+        department = cursor.fetchall()
+        if department:
+            cursor.execute("DELETE FROM Dependent WHERE Dependent_name=%s And Essn=%s", (depName,ssn))
+        else:
+            conn.rollback()
+            flash("Failed to delete works on - incorrect department")
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('view_dependents'))
+
+
 #department location views
 
 # Route to view all locations
