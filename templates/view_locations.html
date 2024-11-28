@@ -59,7 +59,7 @@
 <!-- Back to Dashboard Link -->
 <a href="/base">⬅ Back to Dashboard</a>
 
-<!-- Add New Department Link -->
+<!-- Add New Department location Link -->
 {% if session.get('role_id') == 1 %} <!-- Only Super Admin can add department locations -->
 <a href="/locations/add" style="float: right;">➕ Add New Department Location</a>
 {% endif %}

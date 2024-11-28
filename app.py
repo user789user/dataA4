@@ -839,12 +839,16 @@ def add_dependent():
         return redirect(url_for('view_dependents'))
     return render_template('add_dependent.html')
 
-##not secure yet for within department
 @app.route('/dependents/update/<string:ssn>/<string:depName>', methods=('GET', 'POST'))
 @superadmin_or_admin_required
 def update_dependents(ssn,depName):
     conn = get_db_connection()
     cursor = conn.cursor()
+    if session['department_id'] != None:
+            cursor.execute("SELECT Dno FROM Employee WHERE SSN=%s",(ssn,))
+            Dno = cursor.fetchone()
+            if(Dno[0] != session['department_id']):
+                return redirect(url_for('view_dependents'))
     if request.method == 'POST':
         Sex= request.form['Sex']
         Bdate = request.form['Birthday']
