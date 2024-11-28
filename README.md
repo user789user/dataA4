@@ -14,11 +14,11 @@
 ### 3. Views and Queries for Department-Specific Data
 - [x] Views and queries filtered by department for department admins and users:
   - [x] Department table views
-  - [ ] Dependent views
-  - [ ] Dept_location views
+  - [x] Dependent views
+  - [x] Dept_location views
   - [x] Employee views
-  - [ ] Project views
-  - [ ] Works_on views
+  - [x] Project views
+  - [x] Works_on views
 
 ### 4. Authentication and Authorization
 - [x] Log in and log out
