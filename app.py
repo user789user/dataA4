@@ -311,6 +311,7 @@ def view_departments():
 
 
 @app.route('/departments/add', methods=('GET', 'POST'))
+@superadmin_required
 def add_department():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -396,6 +397,7 @@ def update_department(dnumber):
 
 
 @app.route('/departments/delete/<int:dnumber>', methods=('POST',))
+@superadmin_required
 def delete_department(dnumber):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -444,7 +446,7 @@ def view_employees():
 
 
 @app.route('/employees/add', methods=['GET', 'POST'])
-@login_required
+@superadmin_or_admin_required
 def add_employee():
     """
     Add a new employee. Admins can only add employees to their department.
@@ -499,7 +501,7 @@ def add_employee():
 
 
 @app.route('/employees/update/<ssn>', methods=('GET', 'POST'))
-@login_required
+@superadmin_or_admin_required
 def update_employee(ssn):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -547,7 +549,7 @@ def update_employee(ssn):
 
 
 @app.route('/employees/delete/<ssn>', methods=['POST'])
-@login_required
+@superadmin_or_admin_required
 def delete_employee(ssn):
     """
     Delete an employee. Only accessible to Super Admins and Admins within their department.
@@ -574,6 +576,7 @@ def delete_employee(ssn):
 
 # Route to view all projects
 @app.route('/projects')
+@login_required
 def view_projects():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -699,6 +702,7 @@ def delete_project(pnumber):
 ### **** SHOULD WORKSON VIEW BE DEPENDENT ON DEPARTMENT OF EMPLOYEE OR DEPARTMENT OF PROJECT *****
 ###
 @app.route('/worksOn')
+@login_required
 def view_worksOn():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -792,6 +796,7 @@ def delete_worksOn(ssn, pnumber):
 #Dependents
 
 @app.route('/dependents')
+@login_required
 def view_dependents():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -881,6 +886,7 @@ def delete_dependents(ssn, depName):
 
 # Route to view all locations
 @app.route('/locations')
+@login_required
 def view_locations():
     conn = get_db_connection()
     cursor = conn.cursor()
