@@ -109,13 +109,13 @@
         <!--------------------------------------- Common functionality for all ---------------------------------------->
         <div class="card">
             <h2>Employees</h2>
-            <p>Manage employee data including viewing, updating, and deleting records.</p>
+            <p>View Employees</p>
             <a href="{{ url_for('view_employees') }}">Go to Employees</a>
         </div>
 
         <div class="card">
             <h2>Departments</h2>
-            <p>Manage department data including adding, updating, and deleting records.</p>
+            <p>View Departments</p>
             <a href="{{ url_for('view_departments') }}">Go to Departments</a>
         </div>
 
@@ -149,6 +149,11 @@
             <a href="{{ url_for('testing') }}">Go to Joined Data</a>
         </div>
     </div>
+
+<p>Note:</p>
+<p>Superadmins can manage all employee data, including viewing, updating, and deleting records. </p>
+<p>Admins can manage data only within their department.
+<p>Users can only view their department's data.</p>
 <div class="flash-messages">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
